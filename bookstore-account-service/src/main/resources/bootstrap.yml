@@ -13,7 +13,7 @@ management:
 ---
 
 spring:
-  profiles: local, mysql
+  profiles: local, postgresql
   cloud:
     bus:
       enabled: false

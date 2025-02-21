@@ -2,7 +2,7 @@ create table PRODUCT (
     product_id varchar(255) not null,
     available_item_count integer not null,
     product_description varchar(255),
-    price double not null,
+    price float not null,
     product_name varchar(255) not null,
     product_category_id varchar(255),
     product_image_id varchar(255),
@@ -28,7 +28,7 @@ alter table PRODUCT
 create table REVIEW (
     review_id varchar(255) not null,
     user_id varchar(255),
-    rating_value double not null,
+    rating_value float not null,
     review_message varchar(1000),
     product_id varchar(255) not null,
     user_name varchar(255),

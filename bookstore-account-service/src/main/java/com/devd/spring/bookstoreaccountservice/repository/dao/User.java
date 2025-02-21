@@ -29,7 +29,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USER")
+@Table(name = "B_USER")
 @Builder
 public class User extends DateAudit {
 
