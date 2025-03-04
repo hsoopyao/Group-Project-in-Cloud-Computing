@@ -36,12 +36,25 @@ jobs:
           name: ${{matrix.commons}}
           path: ~/.m2/repository/com/devd/spring/${{matrix.commons}}/
 
-  build-services:
+  download-commons:
     needs: build-commons
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        commons: [bookstore-commons, bookstore-feign]
+        commons: [bookstore-commons, bookstore-feign ]
+
+    steps:
+      - name: Download ${{matrix.commons}} artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{matrix.commons}}
+          path: ~/.m2/repository/com/devd/spring/${{matrix.commons}}/
+
+  build-services:
+    needs: download-commons
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
         service: [bookstore-api-gateway-service, bookstore-eureka-discovery-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service]
 
     steps:
