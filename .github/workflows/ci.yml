@@ -27,7 +27,7 @@ jobs:
           cache: 'maven'
 
       - name: Build and Test ${{ matrix.service }}
-        working-directory: ./services/${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
         run: |
           mvn clean install -DskipTests=false
 
