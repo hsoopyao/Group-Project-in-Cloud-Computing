@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [bookstore-commons, bookstore-feign, bookstore-api-gateway-service, bookstore-eureka-discovery-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service]
+        commons: [bookstore-commons, bookstore-feign]
+        service: [bookstore-api-gateway-service, bookstore-eureka-discovery-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service]
 
     steps:
       - name: Checkout repository
@@ -26,6 +27,11 @@ jobs:
           java-version: '11'
           cache: 'maven'
 
+      - name: Build and Install Common Jars
+        working-directory: ${{ matric.commons }}
+        run: |
+          mvn clean install -DskipTests=true
+
       - name: Build and Test ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
         run: |
@@ -35,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.service }}-artifact
-          path: ./services/${{ matrix.service }}/target/*.jar
+          path: ${{ matrix.service }}/target/*.jar
