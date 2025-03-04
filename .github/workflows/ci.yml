@@ -1,0 +1,38 @@
+name: CI Pipelines
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [bookstore-commons, bookstore-feign, bookstore-api-gateway-service, bookstore-eureka-discovery-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+
+      - name: Build and Test ${{ matrix.service }}
+        working-directory: ./services/${{ matrix.service }}
+        run: |
+          mvn clean install -DskipTests=false
+
+      - name: Archive built artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.service }}-artifact
+          path: ./services/${{ matrix.service }}/target/*.jar
