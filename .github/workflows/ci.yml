@@ -28,7 +28,7 @@ jobs:
           cache: 'maven'
 
       - name: Build and Install Common Jars
-        working-directory: ${{ matric.commons }}
+        working-directory: ${{ matrix.commons }}
         run: |
           mvn clean install -DskipTests=true
 
