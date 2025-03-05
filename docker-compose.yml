@@ -2,21 +2,41 @@ version: "3.4"
 
 services:
 
+#  # Database
+#  bookstore-mysql-db:
+#    image: mysql:5.7
+#    container_name: bookstore-mysql-db
+#    hostname: bookstore-mysql-db
+#    restart: always
+#    environment:
+#      MYSQL_DATABASE: 'bookstore_db'
+#      MYSQL_USER: 'bookstoreDBA'
+#      MYSQL_PASSWORD: 'PaSSworD'
+#      MYSQL_ROOT_PASSWORD: 'r00tPaSSworD'
+#    ports:
+#      - "3306:3306"
+#    expose:
+#      - "3306"
+#    volumes:
+#      - bookstore-db-volume:/var/lib/mysql
+#    networks:
+#      - bookstore-app-network
+
   # Database
-  bookstore-mysql-db:
-    image: mysql:5.7
-    container_name: bookstore-mysql-db
-    hostname: bookstore-mysql-db
+  bookstore-pgsql-db:
+    image: postgres
+    container_name: bookstore-pgsql-db
+    hostname: bookstore-pgsql-db
     restart: always
     environment:
-      MYSQL_DATABASE: 'bookstore_db'
-      MYSQL_USER: 'bookstoreDBA'
-      MYSQL_PASSWORD: 'PaSSworD'
-      MYSQL_ROOT_PASSWORD: 'r00tPaSSworD'
+      POSTGRES_DB: bookstore_db
+      POSTGRES_USER: bookstoreDBA
+      POSTGRES_PASSWORD: PaSSworD
+      SPRING_PROFILES_ACTIVE: docker
     ports:
-      - "3306:3306"
+      - "5432:5432"
     expose:
-      - "3306"
+      - "5432"
     volumes:
       - bookstore-db-volume:/var/lib/mysql
     networks:
@@ -25,7 +45,7 @@ services:
   # Core services
   bookstore-consul-discovery:
     hostname: bookstore-consul-discovery
-    image: consul
+    image: consul:1.15.4
     container_name: bookstore-consul-discovery
     restart: always
     ports:
@@ -33,15 +53,15 @@ services:
     networks:
       - bookstore-app-network
 
-  bookstore-zuul-api-gateway-server:
+  bookstore-api-gateway-server:
     build:
       context: ./bookstore-api-gateway-service
       args:
         JAR_FILE: bookstore-api-gateway-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-zuul-api-gateway-server
-    container_name: bookstore-zuul-api-gateway-server
-    hostname: bookstore-zuul-api-gateway-server
+    image: bookstore-api-gateway-server
+    container_name: bookstore-api-gateway-server
+    hostname: bookstore-api-gateway-server
     ports:
       - "8765:8765"
     networks:

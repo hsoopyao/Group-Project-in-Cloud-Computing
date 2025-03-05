@@ -25,17 +25,8 @@ Key DevOps Goals:
 
 >Frontend App
 
-NOTE: Node.js version must is 16 or 14.
-If you use nvm
-
-```
-nvm use 16
-npm install
-npm start
-```
-
 Navigate to `bookstore-frontend-react-app` folder
-Run below commnads to start Frontend React Application
+Run below commands to start Frontend React Application
 
 ```
 npm install
@@ -63,6 +54,36 @@ docker ps
 But running this way we wont get monitoring of microservices.
 So if monitoring needed to see metrics like jvm memory, tomcat error count and other metrics.
 
+> Using Docker(Recommended)
+
+Start Docker Engine in your machine.
+
+Run ` mvn clean package -DskipTests` at root of project to build all the microservices jars.
+
+Run `docker-compose build --no-cache` to build all the images. You can use the command: `docker images` to find the images.
+
+Run `docker-compose up -d` to start all the containers.
+
+Use the Postman Api collection in the Postman directory. To make request to various services.
+
+Services will be exposed in this ports
+
+```aiignore
+bookstore-catalog-service       : 6001
+bookstore-account-service       : 4001
+bookstore-payment-service       : 8001
+bookstore-api-gateway-server    : 8765
+bookstore-consul-discovery      : 8500
+bookstore-billing-service       : 6001
+bookstore-order-service         : 7001
+bookstore-pgsql-db              : 5432
+bookstore-graphana              : 3030
+bookstore-influxdb              : 8086
+bookstore-chronograf            : 8888
+bookstore-zipkin                : 9411
+bookstore-prometheus            : 9090
+bookstore-telegraf              : 8125
+```
 
 ### Service Discovery
 This project uses Eureka or Consul as Discovery service.
@@ -74,6 +95,15 @@ While running using docker, then consul is the service discovery.
 Reason to use Consul is it has better features and support compared to Eureka. Running services individually in local uses Eureka as service discovery because dont want to run consul agent and set it up as it becomes extra overhead to manage. Since docker-compose manages all consul stuff hence using Consul while running services in docker.
 
 <hr>
+
+### Troubleshooting
+> About backend
+
+if run the command `mvn clean install` occurs like `class lombok.javac.apt.LombokProcessor` error, please try to switch java version to 8 or 11.
+
+> About fronted
+
+Node.js version must is 16 or 14.
 
 > Account Service
 
