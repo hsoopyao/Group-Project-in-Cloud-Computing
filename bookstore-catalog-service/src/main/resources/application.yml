@@ -116,8 +116,8 @@ spring:
 spring:
   profiles: docker
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    database: mysql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
     open-in-view: true
     generate-ddl: true
     hibernate:
@@ -130,7 +130,7 @@ spring:
         use_sql_comments: true
         format_sql: true
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://bookstore-mysql-db:3306/bookstore_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://bookstore-pgsql-db:5432/bookstore_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: bookstoreDBA
     password: PaSSworD
