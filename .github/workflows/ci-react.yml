@@ -25,3 +25,9 @@ jobs:
         run: npm install --force
       - working-directory: bookstore-frontend-react-app
         run: npm run build
+
+      - name: Archive built frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bookstore-frontend-react-app-build
+          path: bookstore-frontend-react-app/build
