@@ -69,10 +69,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: bookstore-frontend-react-app
-        run: npm install postcss-safe-parser@latest postcss@latest --legacy-peer-deps
-
-      - name: Set OpenSSL Legacy Provider
-        run: export NODE_OPTIONS=--openssl-legacy-provider
+        run: npm install react-scripts@4.0.3 --legacy-peer-deps
 
       - name: Build React App
         working-directory: bookstore-frontend-react-app
