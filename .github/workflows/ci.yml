@@ -50,6 +50,37 @@ jobs:
           name: ${{matrix.commons}}
           path: ~/.m2/repository/com/devd/spring/${{matrix.commons}}/
 
+  build-frontend:
+    runs-on: ubuntu-latest
+    needs: download-commons
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and NVM
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 16
+          nvm use 16
+          node -v
+          npm -v
+
+      - name: Install dependencies
+        working-directory: bookstore-frontend-react-app
+        run: npm install
+
+      - name: Build React App
+        working-directory: bookstore-frontend-react-app
+        run: npm run build
+
+      - name: Archive built frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bookstore-frontend-react-app-build
+          path: bookstore-frontend-react-app/build
+
   build-services:
     needs: download-commons
     runs-on: ubuntu-latest
