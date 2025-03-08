@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-api-gateway-server
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-api-gateway-server
+  template:
+    metadata:
+      labels:
+        app: bookstore-api-gateway-server
+    spec:
+      imagePullSecrets:
+        - name: acr-secret
+      containers:
+        - name: bookstore-api-gateway-server
+          image: cloudgp.azurecr.io/bookstore-api-gateway-server
+          ports:
+            - containerPort: 8765
+          env:
+            - name: SERVER_PORT
+              value: "8765"
+            - name: ZIPKIN_HOST
+              value: "bookstore-zipkin:9411"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-api-gateway-server
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-api-gateway-server
+  ports:
+    - protocol: TCP
+      port: 8765
+      targetPort: 8765

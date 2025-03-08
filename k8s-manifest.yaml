@@ -1,0 +1,181 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bookstore
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstore-db-pvc
+  namespace: bookstore
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-pgsql-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-pgsql-db
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-pgsql-db
+  template:
+    metadata:
+      labels:
+        app: bookstore-pgsql-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          env:
+            - name: POSTGRES_DB
+              value: bookstore_db
+            - name: POSTGRES_USER
+              value: bookstoreDBA
+            - name: POSTGRES_PASSWORD
+              value: PaSSworD
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: bookstore-db-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-api-gateway-server
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-api-gateway-server
+  template:
+    metadata:
+      labels:
+        app: bookstore-api-gateway-server
+    spec:
+      containers:
+        - name: bookstore-api-gateway-server
+          image: bookstore-api-gateway-server
+          ports:
+            - containerPort: 8765
+          env:
+            - name: SERVER_PORT
+              value: "8765"
+            - name: ZIPKIN_HOST
+              value: "bookstore-zipkin:9411"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-api-gateway
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-api-gateway-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8765
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-order-service
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-order-service
+  template:
+    metadata:
+      labels:
+        app: bookstore-order-service
+    spec:
+      containers:
+        - name: bookstore-order-service
+          image: bookstore-order-service
+          ports:
+            - containerPort: 7001
+          env:
+            - name: SERVER_PORT
+              value: "7001"
+            - name: ZIPKIN_HOST
+              value: "bookstore-zipkin:9411"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-order
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-order-service
+  ports:
+    - protocol: TCP
+      port: 7001
+      targetPort: 7001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-zipkin
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-zipkin
+  template:
+    metadata:
+      labels:
+        app: bookstore-zipkin
+    spec:
+      containers:
+        - name: bookstore-zipkin
+          image: openzipkin/zipkin
+          ports:
+            - containerPort: 9411
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-zipkin
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-zipkin
+  ports:
+    - protocol: TCP
+      port: 9411
+      targetPort: 9411
