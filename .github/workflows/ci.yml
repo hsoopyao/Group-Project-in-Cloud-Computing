@@ -88,8 +88,8 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:$IMAGE_TAG ${{ matrix.service }}
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:$IMAGE_TAG
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:latest ${{ matrix.service }}
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:latest
 
       - name: Archive built artifacts
         uses: actions/upload-artifact@v4
