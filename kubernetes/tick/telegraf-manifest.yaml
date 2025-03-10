@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-telegraf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-telegraf
+  template:
+    metadata:
+      labels:
+        app: bookstore-telegraf
+    spec:
+      containers:
+        - name: telegraf
+          image: cloudgp.azurecr.io/bookstore-telegraf
+          ports:
+            - containerPort: 8125
+              protocol: UDP
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-telegraf
+spec:
+  selector:
+    app: bookstore-telegraf
+  ports:
+    - protocol: UDP
+      port: 8125
+      targetPort: 8125

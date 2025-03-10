@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-chronograf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-chronograf
+  template:
+    metadata:
+      labels:
+        app: bookstore-chronograf
+    spec:
+      containers:
+        - name: chronograf
+          image: chronograf:1.7.3
+          env:
+            - name: INFLUXDB_URL
+              value: "http://bookstore-influxdb:8086"
+            - name: KAPACITOR_URL
+              value: "http://bookstore-kapacitor:9092"
+          ports:
+            - containerPort: 8888
+          volumeMounts:
+            - name: chronograf-storage
+              mountPath: /var/lib/chronograf
+      volumes:
+        - name: chronograf-storage
+          persistentVolumeClaim:
+            claimName: chronograf-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-chronograf
+spec:
+  selector:
+    app: bookstore-chronograf
+  ports:
+    - protocol: TCP
+      port: 8888
+      targetPort: 8888

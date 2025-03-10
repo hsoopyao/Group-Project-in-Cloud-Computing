@@ -1,27 +1,6 @@
 version: "3.4"
 
 services:
-
-#  # Database
-#  bookstore-mysql-db:
-#    image: mysql:5.7
-#    container_name: bookstore-mysql-db
-#    hostname: bookstore-mysql-db
-#    restart: always
-#    environment:
-#      MYSQL_DATABASE: 'bookstore_db'
-#      MYSQL_USER: 'bookstoreDBA'
-#      MYSQL_PASSWORD: 'PaSSworD'
-#      MYSQL_ROOT_PASSWORD: 'r00tPaSSworD'
-#    ports:
-#      - "3306:3306"
-#    expose:
-#      - "3306"
-#    volumes:
-#      - bookstore-db-volume:/var/lib/mysql
-#    networks:
-#      - bookstore-app-network
-
   # Database
   bookstore-pgsql-db:
     image: postgres
@@ -59,7 +38,7 @@ services:
       args:
         JAR_FILE: bookstore-api-gateway-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-api-gateway-server
+    image: cloudgp.azurecr.io/bookstore-api-gateway-server
     container_name: bookstore-api-gateway-server
     hostname: bookstore-api-gateway-server
     ports:
@@ -77,7 +56,7 @@ services:
       args:
         JAR_FILE: bookstore-account-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-account-service
+    image: cloudgp.azurecr.io/bookstore-account-service
     container_name: bookstore-account-service
     hostname: bookstore-account-service
     ports:
@@ -95,7 +74,7 @@ services:
       args:
         JAR_FILE: bookstore-billing-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-billing-service
+    image: cloudgp.azurecr.io/bookstore-billing-service
     container_name: bookstore-billing-service
     hostname: bookstore-billing-service
     ports:
@@ -113,7 +92,7 @@ services:
       args:
         JAR_FILE: bookstore-catalog-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-catalog-service
+    image: cloudgp.azurecr.io/bookstore-catalog-service
     container_name: bookstore-catalog-service
     hostname: bookstore-catalog-service
     ports:
@@ -131,7 +110,7 @@ services:
       args:
         JAR_FILE: bookstore-order-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-order-service
+    image: cloudgp.azurecr.io/bookstore-order-service
     container_name: bookstore-order-service
     hostname: bookstore-order-service
     ports:
@@ -149,7 +128,7 @@ services:
       args:
         JAR_FILE: bookstore-payment-service-0.0.1-SNAPSHOT.jar
       dockerfile: Dockerfile
-    image: bookstore-payment-service
+    image: cloudgp.azurecr.io/bookstore-payment-service
     container_name: bookstore-payment-service
     hostname: bookstore-payment-service
     ports:
@@ -176,7 +155,7 @@ services:
     build:
       context: ./bookstore-prometheus
       dockerfile: Dockerfile
-    image: bookstore-prometheus
+    image: cloudgp.azurecr.io/bookstore-prometheus
     container_name: bookstore-prometheus
     hostname: bookstore-prometheus
     ports:
@@ -189,7 +168,7 @@ services:
       context: ./bookstore-graphana
       dockerfile: Dockerfile
     image: graphana
-    container_name: bookstore-graphana
+    container_name: cloudgp.azurecr.io/bookstore-graphana
     hostname: bookstore-graphana
     ports:
       - "3030:3000"
@@ -203,7 +182,7 @@ services:
     build:
       context: ./bookstore-telegraph
       dockerfile: Dockerfile
-    image: bookstore-telegraf
+    image: cloudgp.azurecr.io/bookstore-telegraf
     container_name: bookstore-telegraf
     hostname: bookstore-telegraf
     environment:
