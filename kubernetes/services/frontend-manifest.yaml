@@ -17,7 +17,8 @@ spec:
         - name: acr-secret
       containers:
         - name: bookstore-frontend
-          image: cloudgp.azurecr.io/bookstore-frontend
+          image: cloudgp.azurecr.io/bookstore-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           livenessProbe:
