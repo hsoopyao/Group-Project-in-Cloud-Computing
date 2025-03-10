@@ -17,7 +17,8 @@ spec:
         - name: acr-secret
       containers:
         - name: bookstore-payment-service
-          image: cloudgp.azurecr.io/bookstore-payment-service
+          image: cloudgp.azurecr.io/bookstore-payment-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8001
           env:
