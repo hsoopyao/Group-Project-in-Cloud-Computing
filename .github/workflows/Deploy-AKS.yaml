@@ -34,13 +34,13 @@ jobs:
 
     - name: Deploy-AKS
       run: |
-        kubectl apply -f /kubernetes/postgres/postgres-mainfest.yaml
-        kubectl apply -f /kubernetes/services/bookstore-consul.yaml
-        kubectl apply -f /kubernetes/services/bookstore-account-service.yaml
-        kubectl apply -f /kubernetes/services/bookstore-billing-service.yaml
-        kubectl apply -f /kubernetes/services/bookstore-catalog-service.yaml
-        kubectl apply -f /kubernetes/services/bookstore-order-service.yaml 
-        kubectl apply -f /kubernetes/services/bookstore-payment-service.yaml
-        kubectl apply -f /kubernetes/services/bookstore-api-gateway-service.yaml
-        kubectl apply -f /kubernetes/services/frontend-mainfest.yaml
-        kubectl apply -f /kubernetes/services/bookstore-ingress.yaml
+        kubectl apply -f ./kubernetes/postgres/postgres-mainfest.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-account-service.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-billing-service.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-order-service.yaml 
+        kubectl apply -f ./kubernetes/services/bookstore-payment-service.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service.yaml
+        kubectl apply -f ./kubernetes/services/frontend-mainfest.yaml
+        kubectl apply -f ./kubernetes/services/bookstore-ingress.yaml
