@@ -2,7 +2,9 @@ name: Deploy-AKS
 
 on:
   workflow_run:
-    workflows: ["CI Pipelines”, “Frontend CI”]
+    workflows:
+      - CI Pipelines
+      - Frontend CI
     types:
       - completed
 jobs:
