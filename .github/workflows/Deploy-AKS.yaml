@@ -1,4 +1,4 @@
-name: Deploy to AKS
+name: Deploy-AKS
 
 on:
   workflow_run:
