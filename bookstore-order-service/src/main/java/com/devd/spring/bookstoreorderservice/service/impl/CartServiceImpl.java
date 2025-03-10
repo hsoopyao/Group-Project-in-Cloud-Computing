@@ -77,6 +77,9 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    public String random(){
+        return "";
+    }
 
     public Cart getCartByUserName(String userName) {
 
