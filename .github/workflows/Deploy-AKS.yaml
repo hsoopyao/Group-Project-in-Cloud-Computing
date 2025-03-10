@@ -44,3 +44,4 @@ jobs:
         kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service.yaml
         kubectl apply -f ./kubernetes/services/frontend-manifest.yaml
         kubectl apply -f ./kubernetes/services/bookstore-ingress.yaml
+        kubectl apply -f ./kubernetes/monitors/prometheus-manifest.yaml
