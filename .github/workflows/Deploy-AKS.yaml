@@ -15,6 +15,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set AKS Context
+      run: az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+
     - name: Login to Azure Container Registry
       uses: azure/docker-login@v1
       with:
