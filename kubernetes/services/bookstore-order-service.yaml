@@ -31,14 +31,14 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: 6001
+              port: 7001
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: 6001
+              port: 7001
             initialDelaySeconds: 10
             periodSeconds: 5
 #          resources:
