@@ -32,12 +32,9 @@ jobs:
     - name: Set AKS context
       run: az aks get-credentials --resource-group cloud-computing-gp --name bookstore-application
 
-    - name: Check working directory
-      run: ls
-
     - name: Deploy-AKS
       run: |
-        kubectl apply -f ./kubernetes/postgres/postgres-mainfest.yaml
+        kubectl apply -f ./kubernetes/postgres/postgres-manifest.yaml
         kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
         kubectl apply -f ./kubernetes/services/bookstore-account-service.yaml
         kubectl apply -f ./kubernetes/services/bookstore-billing-service.yaml
@@ -45,5 +42,5 @@ jobs:
         kubectl apply -f ./kubernetes/services/bookstore-order-service.yaml 
         kubectl apply -f ./kubernetes/services/bookstore-payment-service.yaml
         kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service.yaml
-        kubectl apply -f ./kubernetes/services/frontend-mainfest.yaml
+        kubectl apply -f ./kubernetes/services/frontend-manifest.yaml
         kubectl apply -f ./kubernetes/services/bookstore-ingress.yaml
