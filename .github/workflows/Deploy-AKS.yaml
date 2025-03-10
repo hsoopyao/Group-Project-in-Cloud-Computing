@@ -23,7 +23,7 @@ jobs:
     - name: Set AKS context
       run: az aks get-credentials --resource-group cloud-computing-gp --name bookstore-application
 
-    - name: Deploy to AKS
+    - name: Deploy-AKS
       run: |
         kubectl apply -f kubernetes/postgres/postgres-mainfest.yaml
         kubectl apply -f kubernetes/services/bookstore-consul.yaml
