@@ -1,12 +1,20 @@
 apiVersion: v1
-kind: ConfigMap
+kind: PersistentVolume
 metadata:
-  name: postgres-config
-  namespace: bookstore
-data:
-  POSTGRES_DB: "bookstore_db"
-  POSTGRES_USER: "postgres"
-
+  name: postgresql-pv
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: managed-premium
+  azureDisk:
+    diskName: postgresql-disk
+    diskURI: "/subscriptions/cea4f1ae-dff5-4428-bab7-e5139042bc8a/resourceGroups/cloud-computing-gp/providers/Microsoft.Compute/disks/postgresql-pv"
+    kind: Managed
+    fsType: ext4
 ---
 
 apiVersion: apps/v1
@@ -16,7 +24,7 @@ metadata:
   namespace: bookstore
 spec:
   serviceName: bookstore-pgsql-db
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: bookstore-pgsql-db
@@ -28,33 +36,27 @@ spec:
       containers:
         - name: postgres
           image: postgres:14
-          envFrom:
-            - configMapRef:
-                name: postgres-config
           env:
+            - name: POSTGRES_DB
+              value: "bookstore_db"
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_PASSWORD
+              value: "PaSSworD"
             - name: PGDATA
               value: "/var/lib/postgresql/data/bookstore"
-          ports:
-            - containerPort: 5432
           volumeMounts:
-            - name: postgres-storage
-              mountPath: /var/lib/postgresql/bookstore
-          resources:
-            limits:
-              cpu: "2"
-              memory: "2Gi"
-            requests:
-              cpu: "1"
-              memory: "1Gi"
-      volumes:
-        - name: postgres-storage
-          persistentVolumeClaim:
-            claimName: postgres-pvc
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-data
+        namespace: bookstore
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: managed-premium
+        resources:
+          requests:
+            storage: 10Gi
+
 ---
 apiVersion: v1
 kind: Service
@@ -62,10 +64,10 @@ metadata:
   name: bookstore-pgsql-db
   namespace: bookstore
 spec:
+  clusterIP: None
   selector:
     app: bookstore-pgsql-db
   ports:
     - protocol: TCP
       port: 5432
       targetPort: 5432
-  type: ClusterIP
