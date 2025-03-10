@@ -41,13 +41,13 @@ spec:
               port: 6001
             initialDelaySeconds: 10
             periodSeconds: 5
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "200m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
+#          resources:
+#            requests:
+#              memory: "256Mi"
+#              cpu: "200m"
+#            limits:
+#              memory: "512Mi"
+#              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
