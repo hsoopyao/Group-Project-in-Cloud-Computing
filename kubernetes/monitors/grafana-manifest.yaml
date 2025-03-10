@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-grafana
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-grafana
+  template:
+    metadata:
+      labels:
+        app: bookstore-grafana
+    spec:
+      imagePullSecrets:
+        - name: acr-secret
+      containers:
+        - name: grafana
+          image: cloudgp.azurecr.io/bookstore-graphana
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-grafana
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-grafana
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

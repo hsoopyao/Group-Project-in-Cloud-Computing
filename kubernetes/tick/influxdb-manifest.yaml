@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-influxdb
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-influxdb
+  template:
+    metadata:
+      labels:
+        app: bookstore-influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb
+          ports:
+            - containerPort: 8086
+          volumeMounts:
+            - name: influxdb-storage
+              mountPath: /var/lib/influxdb
+      volumes:
+        - name: influxdb-storage
+          persistentVolumeClaim:
+            claimName: influxdb-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-influxdb
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-influxdb
+  ports:
+    - protocol: TCP
+      port: 8086
+      targetPort: 8086

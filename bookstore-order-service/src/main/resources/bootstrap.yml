@@ -45,6 +45,7 @@ spring:
       port: 8500
       discovery:
         instanceId: ${spring.application.name}:${random.value}
+        hostname: ${spring.application.name}
       enabled: true #consul discovery is enabled in this profile
 
 management:
