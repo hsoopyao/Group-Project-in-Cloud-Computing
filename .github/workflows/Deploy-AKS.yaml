@@ -36,7 +36,7 @@ jobs:
     - name: Wait for Image to be Available in ACR
       run: |
         IMAGE_TAG=${{ env.IMAGE_TAG }}
-        run: echo "IMAGE_TAG is: $IMAGE_TAG"
+        echo "IMAGE_TAG is: $IMAGE_TAG"
         for i in {1..5}; do  # 5 attempts
           echo "Waiting for image to be available in ACR... (Attempt $i/5)"
           sleep 1  # Sleep for 1 second per attempt
