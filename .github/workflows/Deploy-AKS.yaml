@@ -32,16 +32,41 @@ jobs:
       - name: Set AKS context
         run: az aks get-credentials --resource-group cloud-computing-gp --name bookstore-application
 
+      - name: Install envsubst
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext-base
+
+      - name: Set environment variables
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          echo "IMAGE_TAG: $IMAGE_TAG"
+  
+      - name: Replace variables in Kubernetes manifest
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          envsubst < ./kubernetes/postgres/postgres-manifest.yaml > ./kubernetes/postgres/postgres-manifest-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-account-service.yaml > ./kubernetes/services/bookstore-account-service-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-billing-service.yaml > ./kubernetes/services/bookstore-billing-service-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-catalog-service.yaml > ./kubernetes/services/bookstore-catalog-service-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-order-service.yaml > ./kubernetes/services/bookstore-order-service-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-payment-service.yaml > ./kubernetes/services/bookstore-payment-service-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-api-gateway-service.yaml > ./kubernetes/services/bookstore-api-gateway-service-substituted.yaml
+          envsubst < ./kubernetes/services/frontend-manifest.yaml > ./kubernetes/services/frontend-manifest-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-ingress.yaml > ./kubernetes/services/bookstore-ingress-substituted.yaml
+          envsubst < ./kubernetes/monitors/prometheus-manifest.yaml > ./kubernetes/monitors/prometheus-manifest-substituted.yaml
+
+
       - name: Deploy-AKS
         run: |
-          kubectl apply -f ./kubernetes/postgres/postgres-manifest.yaml
+          kubectl apply -f ./kubernetes/postgres/postgres-manifest-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-account-service.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-billing-service.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-order-service.yaml 
-          kubectl apply -f ./kubernetes/services/bookstore-payment-service.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service.yaml
-          kubectl apply -f ./kubernetes/services/frontend-manifest.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-ingress.yaml
-          kubectl apply -f ./kubernetes/monitors/prometheus-manifest.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-account-service-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-billing-service-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-payment-service-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service-substituted.yaml
+          kubectl apply -f ./kubernetes/services/frontend-manifest-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
+          kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml
