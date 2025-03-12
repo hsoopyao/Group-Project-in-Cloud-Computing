@@ -9,6 +9,10 @@ on:
       - CI Pipelines
     types:
       - completed
+    branches:
+      - main
+    conclusions:
+      - success
 jobs:
   deploy:
     runs-on: ubuntu-latest
