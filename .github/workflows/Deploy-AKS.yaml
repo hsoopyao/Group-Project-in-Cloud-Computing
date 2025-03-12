@@ -35,8 +35,6 @@ jobs:
 
     - name: Wait for Image to be Available in ACR
       run: |
-        IMAGE_TAG=$(git rev-parse --short HEAD) >> $GITHUB_ENV
-        echo "IMAGE_TAG is: $IMAGE_TAG"
         for i in {1..5}; do  # 5 attempts
           echo "Waiting for image to be available in ACR... (Attempt $i/5)"
           sleep 1  # Sleep for 1 second per attempt
@@ -44,6 +42,9 @@ jobs:
         
     - name: Update Kubernetes Deployment with New Image
       run: |
+        IMAGE_TAG=$(git rev-parse --short HEAD) >> $GITHUB_ENV
+        echo "IMAGE_TAG is: $IMAGE_TAG"
+        
         kubectl set image deployment/bookstore-frontend-react-app \
         bookstore-frontend-react-app=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG
 
