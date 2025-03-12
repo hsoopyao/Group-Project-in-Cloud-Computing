@@ -17,7 +17,7 @@ spec:
         - name: acr-secret
       containers:
         - name: bookstore-api-gateway-server
-          image: cloudgp.azurecr.io/bookstore-api-gateway-server
+          image: cloudgp.azurecr.io/bookstore-api-gateway-server:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
             - containerPort: 8765
