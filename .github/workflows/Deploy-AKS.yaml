@@ -11,37 +11,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Set AKS Context
-      run: az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+      - name: Set AKS Context
+        run: az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
 
-    - name: Login to Azure Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ${{ secrets.ACR_LOGIN_SERVER }}
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Set AKS context
-      run: az aks get-credentials --resource-group cloud-computing-gp --name bookstore-application
+      - name: Set AKS context
+        run: az aks get-credentials --resource-group cloud-computing-gp --name bookstore-application
 
-    - name: Deploy-AKS
-      run: |
-        kubectl apply -f ./kubernetes/postgres/postgres-manifest.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-account-service.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-billing-service.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-order-service.yaml 
-        kubectl apply -f ./kubernetes/services/bookstore-payment-service.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service.yaml
-        kubectl apply -f ./kubernetes/services/frontend-manifest.yaml
-        kubectl apply -f ./kubernetes/services/bookstore-ingress.yaml
-        kubectl apply -f ./kubernetes/monitors/prometheus-manifest.yaml
+      - name: Deploy-AKS
+        run: |
+          kubectl apply -f ./kubernetes/postgres/postgres-manifest.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-account-service.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-billing-service.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-order-service.yaml 
+          kubectl apply -f ./kubernetes/services/bookstore-payment-service.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service.yaml
+          kubectl apply -f ./kubernetes/services/frontend-manifest.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-ingress.yaml
+          kubectl apply -f ./kubernetes/monitors/prometheus-manifest.yaml

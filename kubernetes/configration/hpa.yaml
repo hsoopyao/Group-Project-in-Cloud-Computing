@@ -7,8 +7,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: bookstore-catalog-service  
-  minReplicas: 1
-  maxReplicas: 5  # we can change the number as needed
+  minReplicas: 2
+  maxReplicas: 8  # we can change the number as needed
   metrics:
     - type: Resource
       resource:

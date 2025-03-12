@@ -11,5 +11,6 @@ public interface AppUserDetailsService extends UserDetailsService {
 
   @Override
   UserDetails loadUserByUsername(String userNameOrEmail) throws UsernameNotFoundException;
+  
 
 }
