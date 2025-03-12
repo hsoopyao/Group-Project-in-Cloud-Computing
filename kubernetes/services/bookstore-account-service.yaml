@@ -17,7 +17,7 @@ spec:
         - name: acr-secret
       containers:
         - name: bookstore-account-service
-          image: cloudgp.azurecr.io/bookstore-account-service:latest
+          image: cloudgp.azurecr.io/bookstore-account-service
           imagePullPolicy: Always
           ports:
             - containerPort: 4001
