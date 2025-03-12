@@ -48,22 +48,27 @@ spring:
         hostname: ${spring.application.name}
       enabled: true #consul discovery is enabled in this profile
 
+#management:
+#  metrics:
+#    export:
+#      statsd:
+#        enabled: true
+#        flavor: telegraf
+#        port: 8125
+#      influx: #pushing influx metrics.
+#        db: bookstore_influxdb_monitoring_metrics
+#        uri: http://bookstore-influxdb:8086
+#        auto-create-db: true
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+
 management:
   metrics:
     export:
-      statsd:
-        enabled: true
-        flavor: telegraf
-        port: 8125
-      influx: #pushing influx metrics.
-        db: bookstore_influxdb_monitoring_metrics
-        uri: http://bookstore-influxdb:8086
-        auto-create-db: true
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
+      influx:
+        enabled: false #influx metrics not pushing in this profile
 eureka:
   client:
     enabled: false #eureka discovery set false, in this profile consul discovery is enabled.
