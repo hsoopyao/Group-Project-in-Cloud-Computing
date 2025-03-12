@@ -1,20 +1,14 @@
 name: Deploy-AKS
 
 on:
-  push:
-    branches:
-      - main
   workflow_run:
     workflows:
       - CI Pipelines
     types:
       - completed
-    branches:
-      - main
-    conclusions:
-      - success
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
