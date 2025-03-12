@@ -45,25 +45,25 @@ jobs:
         IMAGE_TAG=$(git rev-parse --short HEAD) >> $GITHUB_ENV
         echo "IMAGE_TAG is: $IMAGE_TAG"
         
-        kubectl set image deployment/bookstore-frontend \
+        kubectl set image deployment/bookstore-frontend -n bookstore\
         bookstore-frontend=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG
 
-        kubectl set image deployment/bookstore-api-gateway-server \
+        kubectl set image deployment/bookstore-api-gateway-server -n bookstore\
         bookstore-api-gateway-server=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-api-gateway-service:$IMAGE_TAG
         
-        kubectl set image deployment/bookstore-account-service \
+        kubectl set image deployment/bookstore-account-service -n bookstore\
         bookstore-account-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-account-service:$IMAGE_TAG
         
-        kubectl set image deployment/bookstore-billing-service \
+        kubectl set image deployment/bookstore-billing-service -n bookstore\
         bookstore-billing-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-billing-service:$IMAGE_TAG
         
-        kubectl set image deployment/bookstore-catalog-service \
+        kubectl set image deployment/bookstore-catalog-service -n bookstore\
         bookstore-catalog-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-catalog-service:$IMAGE_TAG
         
-        kubectl set image deployment/bookstore-order-service \
+        kubectl set image deployment/bookstore-order-service -n bookstore\
         bookstore-order-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-order-service:$IMAGE_TAG
         
-        kubectl set image deployment/bookstore-payment-service \
+        kubectl set image deployment/bookstore-payment-service -n bookstore\
         bookstore-payment-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-payment-service:$IMAGE_TAG
 
     - name: Deploy-AKS
