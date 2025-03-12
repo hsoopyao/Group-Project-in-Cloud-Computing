@@ -10,6 +10,9 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ bookstore-frontend-react-app, bookstore-api-gateway-service, bookstore-eureka-discovery-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service ]
 
     steps:
     - name: Checkout repository
@@ -32,6 +35,21 @@ jobs:
 
     - name: Set AKS context
       run: az aks get-credentials --resource-group cloud-computing-gp --name bookstore-application
+
+    - name: Wait for Image to be Available in ACR
+      run: |
+        IMAGE_TAG=${{ env.IMAGE_TAG }}
+        for i in {1..5}; do  # 5 attempts
+          az acr repository show-tags --name ${{ secrets.ACR_LOGIN_SERVER }} \
+            --repository ${{ matrix.service }} --query "contains(@, '$IMAGE_TAG')" | grep true && break
+          echo "Waiting for image to be available in ACR... (Attempt $i/5)"
+          sleep 1  # Sleep for 1 second per attempt
+        done
+        
+    - name: Update Kubernetes Deployment with New Image
+      run: |
+        kubectl set image deployment/${{ matrix.service }} \
+        ${{ matrix.service }}=${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:$IMAGE_TAG
 
     - name: Deploy-AKS
       run: |
