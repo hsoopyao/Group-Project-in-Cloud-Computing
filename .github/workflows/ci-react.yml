@@ -35,7 +35,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          IMAGE_TAG=$(git rev-parse --short HEAD)
+          IMAGE_TAG=$(git rev-parse --short HEAD) >> $GITHUB_ENV
+          echo "IMAGE_TAG is: $IMAGE_TAG"
           docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG bookstore-frontend-react-app
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG
 
