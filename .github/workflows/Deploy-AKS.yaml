@@ -10,9 +10,6 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [ bookstore-frontend-react-app, bookstore-api-gateway-service, bookstore-eureka-discovery-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service ]
 
     steps:
     - name: Checkout repository
@@ -40,16 +37,35 @@ jobs:
       run: |
         IMAGE_TAG=${{ env.IMAGE_TAG }}
         for i in {1..5}; do  # 5 attempts
-          az acr repository show-tags --name ${{ secrets.ACR_LOGIN_SERVER }} \
-            --repository ${{ matrix.service }} --query "contains(@, '$IMAGE_TAG')" | grep true && break
           echo "Waiting for image to be available in ACR... (Attempt $i/5)"
           sleep 1  # Sleep for 1 second per attempt
         done
         
     - name: Update Kubernetes Deployment with New Image
       run: |
-        kubectl set image deployment/${{ matrix.service }} \
-        ${{ matrix.service }}=${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:$IMAGE_TAG
+        kubectl set image deployment/bookstore-frontend-react-app \
+        bookstore-frontend-react-app=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG
+
+        kubectl set image deployment/bookstore-api-gateway-service \
+        bookstore-api-gateway-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-api-gateway-service:$IMAGE_TAG
+        
+        kubectl set image deployment/bookstore-eureka-discovery-service \
+        bookstore-eureka-discovery-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-eureka-discovery-service:$IMAGE_TAG
+        
+        kubectl set image deployment/bookstore-account-service \
+        bookstore-account-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-account-service:$IMAGE_TAG
+        
+        kubectl set image deployment/bookstore-billing-service \
+        bookstore-billing-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-billing-service:$IMAGE_TAG
+        
+        kubectl set image deployment/bookstore-catalog-service \
+        bookstore-catalog-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-catalog-service:$IMAGE_TAG
+        
+        kubectl set image deployment/bookstore-order-service \
+        bookstore-order-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-order-service:$IMAGE_TAG
+        
+        kubectl set image deployment/bookstore-payment-service \
+        bookstore-payment-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-payment-service:$IMAGE_TAG
 
     - name: Deploy-AKS
       run: |
