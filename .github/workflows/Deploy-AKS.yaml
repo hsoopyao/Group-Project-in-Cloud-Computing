@@ -45,14 +45,11 @@ jobs:
         IMAGE_TAG=$(git rev-parse --short HEAD) >> $GITHUB_ENV
         echo "IMAGE_TAG is: $IMAGE_TAG"
         
-        kubectl set image deployment/bookstore-frontend-react-app \
-        bookstore-frontend-react-app=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG
+        kubectl set image deployment/bookstore-frontend \
+        bookstore-frontend=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-frontend-react-app:$IMAGE_TAG
 
-        kubectl set image deployment/bookstore-api-gateway-service \
-        bookstore-api-gateway-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-api-gateway-service:$IMAGE_TAG
-        
-        kubectl set image deployment/bookstore-eureka-discovery-service \
-        bookstore-eureka-discovery-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-eureka-discovery-service:$IMAGE_TAG
+        kubectl set image deployment/bookstore-api-gateway-server \
+        bookstore-api-gateway-server=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-api-gateway-service:$IMAGE_TAG
         
         kubectl set image deployment/bookstore-account-service \
         bookstore-account-service=${{ secrets.ACR_LOGIN_SERVER }}/bookstore-account-service:$IMAGE_TAG
