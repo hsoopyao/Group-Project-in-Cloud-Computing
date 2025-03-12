@@ -17,7 +17,7 @@ spec:
         - name: acr-secret
       containers:
         - name: bookstore-order-service
-          image: cloudgp.azurecr.io/bookstore-order-service:latest
+          image: cloudgp.azurecr.io/bookstore-order-service
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
