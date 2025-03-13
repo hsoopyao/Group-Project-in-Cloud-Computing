@@ -28,10 +28,10 @@ spec:
               value: "bookstore-zipkin:9411"
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
-#          resources:
-#            requests:
-#              memory: "256Mi"
-#              cpu: "200m"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
 #            limits:
 #              memory: "512Mi"
 #              cpu: "500m"
