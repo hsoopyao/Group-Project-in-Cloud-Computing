@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bookstore-api-gateway-server
+  name: bookstore-api-gateway-service
   namespace: bookstore
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bookstore-api-gateway-server
+      app: bookstore-api-gateway-service
   template:
     metadata:
       labels:
-        app: bookstore-api-gateway-server
+        app: bookstore-api-gateway-service
     spec:
       containers:
-        - name: bookstore-api-gateway-server
-          image: bookstoreapplicationregistry.azurecr.io/bookstore-api-gateway-server:${IMAGE_TAG}
+        - name: bookstore-api-gateway-service
+          image: bookstoreapplicationregistry.azurecr.io/bookstore-api-gateway-service:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
             - containerPort: 8765
@@ -37,11 +37,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: bookstore-api-gateway-server
+  name: bookstore-api-gateway-service
   namespace: bookstore
 spec:
   selector:
-    app: bookstore-api-gateway-server
+    app: bookstore-api-gateway-service
   ports:
     - protocol: TCP
       port: 8765
