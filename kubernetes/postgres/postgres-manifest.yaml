@@ -12,7 +12,7 @@ spec:
   storageClassName: managed-standard
   azureDisk:
     diskName: postgresql-pv
-    diskURI: "/subscriptions/cea4f1ae-dff5-4428-bab7-e5139042bc8a/resourceGroups/cloud-computing-gp/providers/Microsoft.Compute/disks/postgresql-pv"
+    diskURI: "/subscriptions/7ef20365-f671-469f-af5c-e139c62374e0/resourceGroups/cloud-computing-gp/providers/Microsoft.Compute/disks/postgresql-pv"
     kind: Managed
     fsType: ext4
 ---
