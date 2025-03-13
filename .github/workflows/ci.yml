@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [bookstore-api-gateway-server, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service]
+        service: [bookstore-api-gateway-service, bookstore-account-service, bookstore-billing-service, bookstore-catalog-service, bookstore-order-service, bookstore-payment-service]
 
     steps:
       - name: Checkout repository
