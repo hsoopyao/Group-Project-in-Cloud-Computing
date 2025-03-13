@@ -13,11 +13,9 @@ spec:
       labels:
         app: bookstore-prometheus
     spec:
-      imagePullSecrets:
-        - name: acr-secret
       containers:
         - name: prometheus
-          image: cloudgp.azurecr.io/bookstore-prometheus
+          image: bookstoreapplicationregistry.azurecr.io/bookstore-prometheus
           ports:
             - containerPort: 9090
 ---
