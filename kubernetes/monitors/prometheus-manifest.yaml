@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: prometheus
-          image: bookstoreapplicationregistry.azurecr.io/bookstore-prometheus
+          image: bookstoreapplicationregistry.azurecr.io/bookstore-prometheus:${IMAGE_TAG}
+          imagePullPolicy: Always
           ports:
             - containerPort: 9090
 ---
