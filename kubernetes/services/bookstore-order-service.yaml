@@ -13,11 +13,9 @@ spec:
       labels:
         app: bookstore-order-service
     spec:
-      imagePullSecrets:
-        - name: acr-secret
       containers:
         - name: bookstore-order-service
-          image: cloudgp.azurecr.io/bookstore-order-service:${IMAGE_TAG}
+          image: bookstoreapplicationregistry.azurecr.io/bookstore-order-service:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
             - containerPort: 7001
