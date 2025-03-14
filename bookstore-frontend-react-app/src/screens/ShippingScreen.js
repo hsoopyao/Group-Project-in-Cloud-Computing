@@ -69,7 +69,7 @@ const ShippingScreen = ({ history }) => {
     }
     dispatch(saveShippingAddressIdToLocalStorage(shippingAddressId));
     dispatch(saveBillingAddressIdToLocalStorage(billingAddressId));
-    history.push('/payment');
+    history.push('/placeOrder');
   };
 
   const deleteAddress = (addressId) => {
@@ -565,7 +565,7 @@ const ShippingScreen = ({ history }) => {
         <hr></hr>
         <Row className='mx-5 justify-content-md-center'>
           <Button type='submit' variant='primary' onClick={proceedToPayment} className='mt-3' disabled={!shippingAddressId}>
-            Proceed to Payment
+            Proceed to Place Order
           </Button>
         </Row>
       </>
