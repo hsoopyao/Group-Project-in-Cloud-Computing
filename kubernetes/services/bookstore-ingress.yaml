@@ -22,6 +22,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: bookstore-api-gateway
+                name: bookstore-api-gateway-service
                 port:
                   number: 8765
