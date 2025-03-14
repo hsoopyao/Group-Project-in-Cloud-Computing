@@ -319,7 +319,7 @@ export const getOrderApi = async (orderId) => {
 
 export const saveAddressApi = async (addressRequestBody) => {
   const axiosConfig = getAxiosConfig();
-  const responseData = axios.post(`${BACKEND_API_GATEWAY_URL}/api/billing/address`, addressRequestBody, axiosConfig).then((response) => {
+  const responseData = axios.post(`${BACKEND_API_GATEWAY_URL}/api/order/address`, addressRequestBody, axiosConfig).then((response) => {
     return response.data;
   });
   return responseData;
@@ -327,7 +327,7 @@ export const saveAddressApi = async (addressRequestBody) => {
 
 export const getAllAddressesApi = async () => {
   const axiosConfig = getAxiosConfig();
-  const responseData = axios.get(`${BACKEND_API_GATEWAY_URL}/api/billing/address`, axiosConfig).then((response) => {
+  const responseData = axios.get(`${BACKEND_API_GATEWAY_URL}/api/order/address`, axiosConfig).then((response) => {
     return response.data;
   });
   return responseData;
@@ -335,7 +335,7 @@ export const getAllAddressesApi = async () => {
 
 export const deleteAddressApi = async (addressId) => {
   const axiosConfig = getAxiosConfig();
-  const responseData = axios.delete(`${BACKEND_API_GATEWAY_URL}/api/billing/address/${addressId}`, axiosConfig).then((response) => {
+  const responseData = axios.delete(`${BACKEND_API_GATEWAY_URL}/api/order/address/${addressId}`, axiosConfig).then((response) => {
     return response.data;
   });
   return responseData;

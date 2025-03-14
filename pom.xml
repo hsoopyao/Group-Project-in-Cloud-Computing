@@ -23,10 +23,8 @@
         <module>bookstore-api-gateway-service</module>
         <module>bookstore-eureka-discovery-service</module>
         <module>bookstore-account-service</module>
-        <module>bookstore-billing-service</module>
         <module>bookstore-catalog-service</module>
         <module>bookstore-order-service</module>
-        <module>bookstore-payment-service</module>
     </modules>
     <packaging>pom</packaging>
 

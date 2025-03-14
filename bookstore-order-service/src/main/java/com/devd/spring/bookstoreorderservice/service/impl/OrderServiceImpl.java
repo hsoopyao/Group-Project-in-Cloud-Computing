@@ -1,13 +1,9 @@
 package com.devd.spring.bookstoreorderservice.service.impl;
 
-import com.devd.spring.bookstorecommons.exception.RunTimeExceptionPlaceHolder;
-import com.devd.spring.bookstorecommons.feign.BillingFeignClient;
 import com.devd.spring.bookstorecommons.feign.PaymentFeignClient;
 import com.devd.spring.bookstorecommons.util.CommonUtilityMethods;
-import com.devd.spring.bookstorecommons.web.CreatePaymentRequest;
-import com.devd.spring.bookstorecommons.web.CreatePaymentResponse;
-import com.devd.spring.bookstorecommons.web.GetAddressResponse;
-import com.devd.spring.bookstorecommons.web.GetPaymentMethodResponse;
+
+
 import com.devd.spring.bookstoreorderservice.repository.OrderBillingAddressRepository;
 import com.devd.spring.bookstoreorderservice.repository.OrderItemRepository;
 import com.devd.spring.bookstoreorderservice.repository.OrderRepository;
@@ -20,11 +16,7 @@ import com.devd.spring.bookstoreorderservice.repository.dao.OrderShippingAddress
 import com.devd.spring.bookstoreorderservice.service.CartItemService;
 import com.devd.spring.bookstoreorderservice.service.CartService;
 import com.devd.spring.bookstoreorderservice.service.OrderService;
-import com.devd.spring.bookstoreorderservice.web.Card;
-import com.devd.spring.bookstoreorderservice.web.CreateOrderRequest;
-import com.devd.spring.bookstoreorderservice.web.CreateOrderResponse;
-import com.devd.spring.bookstoreorderservice.web.PreviewOrderRequest;
-import com.devd.spring.bookstoreorderservice.web.PreviewOrderResponse;
+import com.devd.spring.bookstoreorderservice.web.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -49,6 +41,9 @@ public class OrderServiceImpl implements OrderService {
     OrderItemRepository orderItemRepository;
 
     @Autowired
+    AddressServiceImpl addressService;
+
+    @Autowired
     OrderBillingAddressRepository orderBillingAddressRepository;
 
     @Autowired
@@ -59,12 +54,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     CartItemService cartItemService;
-
-    @Autowired
-    BillingFeignClient billingFeignClient;
-
-    @Autowired
-    PaymentFeignClient paymentFeignClient;
 
     @Override
     public CreateOrderResponse createOrder(CreateOrderRequest createOrderRequest) {
@@ -78,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
         //Get Billing Address
         GetAddressResponse billingAddress = null;
         if (createOrderRequest.getBillingAddressId() != null && !createOrderRequest.getBillingAddressId().isEmpty()) {
-            billingAddress = billingFeignClient.getAddressById(createOrderRequest.getBillingAddressId());
+            billingAddress = addressService.getAddressById(createOrderRequest.getBillingAddressId());
             OrderBillingAddress orderBillingAddress = new OrderBillingAddress();
             BeanUtils.copyProperties(billingAddress, orderBillingAddress);
             createOrderResponse.setBillingAddress(orderBillingAddress);
@@ -87,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
         //Get Shipping Address
         GetAddressResponse shippingAddress = null;
         if (createOrderRequest.getShippingAddressId() != null && !createOrderRequest.getShippingAddressId().isEmpty()) {
-            shippingAddress = billingFeignClient.getAddressById(createOrderRequest.getShippingAddressId());
+            shippingAddress = addressService.getAddressById(createOrderRequest.getShippingAddressId());
             billingAddress = shippingAddress;
 
             if (createOrderRequest.getBillingAddressId() == null) {
@@ -192,12 +181,12 @@ public class OrderServiceImpl implements OrderService {
         PreviewOrderResponse previewOrderResponse = new PreviewOrderResponse();
 
         if(previewOrderRequest.getBillingAddressId() != null && !previewOrderRequest.getBillingAddressId().isEmpty()){
-            GetAddressResponse billingAddress = billingFeignClient.getAddressById(previewOrderRequest.getBillingAddressId());
+            GetAddressResponse billingAddress = addressService.getAddressById(previewOrderRequest.getBillingAddressId());
             previewOrderResponse.setBillingAddress(billingAddress);
         }
 
         if(previewOrderRequest.getShippingAddressId() != null && !previewOrderRequest.getShippingAddressId().isEmpty()){
-            GetAddressResponse shippingAddress = billingFeignClient.getAddressById(previewOrderRequest.getShippingAddressId());
+            GetAddressResponse shippingAddress = addressService.getAddressById(previewOrderRequest.getShippingAddressId());
             if (previewOrderRequest.getBillingAddressId() == null) {
                 previewOrderResponse.setBillingAddress(shippingAddress);
             }

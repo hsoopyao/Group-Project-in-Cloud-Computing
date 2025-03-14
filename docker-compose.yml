@@ -68,24 +68,6 @@ services:
       - ZIPKIN_HOST=bookstore-zipkin:9411
       - SPRING_PROFILES_ACTIVE=docker
 
-  bookstore-billing-service:
-    build:
-      context: ./bookstore-billing-service
-      args:
-        JAR_FILE: bookstore-billing-service-0.0.1-SNAPSHOT.jar
-      dockerfile: Dockerfile
-    image: cloudgp.azurecr.io/bookstore-billing-service
-    container_name: bookstore-billing-service
-    hostname: bookstore-billing-service
-    ports:
-      - "5001:5001"
-    networks:
-      - bookstore-app-network
-    environment:
-      - SERVER_PORT=5001
-      - ZIPKIN_HOST=bookstore-zipkin:9411
-      - SPRING_PROFILES_ACTIVE=docker
-
   bookstore-catalog-service:
     build:
       context: ./bookstore-catalog-service
@@ -119,24 +101,6 @@ services:
       - bookstore-app-network
     environment:
       - SERVER_PORT=7001
-      - ZIPKIN_HOST=bookstore-zipkin:9411
-      - SPRING_PROFILES_ACTIVE=docker
-
-  bookstore-payment-service:
-    build:
-      context: ./bookstore-payment-service
-      args:
-        JAR_FILE: bookstore-payment-service-0.0.1-SNAPSHOT.jar
-      dockerfile: Dockerfile
-    image: cloudgp.azurecr.io/bookstore-payment-service
-    container_name: bookstore-payment-service
-    hostname: bookstore-payment-service
-    ports:
-      - "8001:8001"
-    networks:
-      - bookstore-app-network
-    environment:
-      - SERVER_PORT=8001
       - ZIPKIN_HOST=bookstore-zipkin:9411
       - SPRING_PROFILES_ACTIVE=docker
 
