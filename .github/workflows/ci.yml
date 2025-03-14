@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [bookstore-api-gateway-service, bookstore-account-service, bookstore-catalog-service, bookstore-order-service]
+        service: [bookstore-api-gateway-service, bookstore-account-service, bookstore-catalog-service, bookstore-order-service, bookstore-prometheus]
 
     steps:
       - name: Checkout repository
@@ -74,7 +74,8 @@ jobs:
           name: ${{matrix.commons}}
           path: ~/.m2/repository/com/devd/spring/${{matrix.commons}}/
 
-      - name: Build and Test ${{ matrix.service }}
+      - name: Build and Test ${{ matrix.service }} (skip for bookstore-prometheus)
+        if: matrix.service != 'bookstore-prometheus'
         working-directory: ${{ matrix.service }}
         run: mvn clean install -DskipTests=false
 
@@ -85,11 +86,19 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Docker Image (for Java services)
+        if: matrix.service != 'bookstore-prometheus'
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
           docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:$IMAGE_TAG ${{ matrix.service }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.service }}:$IMAGE_TAG
+
+      - name: Build and Push Docker Image (for bookstore-prometheus)
+        if: matrix.service == 'bookstore-prometheus'
+        run: |
+          IMAGE_TAG=$(git rev-parse --short HEAD)
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/bookstore-prometheus:$IMAGE_TAG bookstore-prometheus
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/bookstore-prometheus:$IMAGE_TAG
 
       - name: Archive built artifacts
         uses: actions/upload-artifact@v4
