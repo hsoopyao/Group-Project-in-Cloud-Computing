@@ -10,7 +10,7 @@ export let options = {
 };
 
 export default function () {
-    let res = http.get('http://bookstore-catalog-service.bookstore.svc.cluster.local:6001/product/25');
+    let res = http.get('http://131.145.96.19/');
     check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 }
