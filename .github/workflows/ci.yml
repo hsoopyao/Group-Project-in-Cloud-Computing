@@ -50,6 +50,9 @@ jobs:
           name: ${{matrix.commons}}
           path: ~/.m2/repository/com/devd/spring/${{matrix.commons}}/
 
+      - name: show the files
+        run: ls
+
   build-services:
     needs: download-commons
     runs-on: ubuntu-latest
