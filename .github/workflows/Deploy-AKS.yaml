@@ -58,6 +58,7 @@ jobs:
       - name: Deploy-AKS
         run: |
           kubectl apply -f ./kubernetes/postgres/postgres-manifest-substituted.yaml
+          kubectl apply -f ./kubernetes/monitors/zipkin-manifest.yaml
           kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
           kubectl apply -f ./kubernetes/services/bookstore-account-service-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service-substituted.yaml
