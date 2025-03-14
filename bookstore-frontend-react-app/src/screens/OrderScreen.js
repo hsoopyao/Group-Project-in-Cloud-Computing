@@ -43,6 +43,7 @@ const OrderScreen = ({ match, history }) => {
     dispatch(getOrderDetailsAction(orderId));
   }, [dispatch, orderId]);
 
+  console.log(order)
   const deliverHandler = () => {
     // dispatch(deliverOrder(order));
   };
@@ -86,15 +87,10 @@ const OrderScreen = ({ match, history }) => {
 
                 <ListGroup.Item>
                   <h2>Payment Method</h2>
-                  <p>
-                    <strong>Method: </strong>
-                    {order.card.cardBrand.toUpperCase()} - **** **** **** {order.card.last4Digits}
-                  </p>
-                  {order.paid ? (
+                  
+                  
                     <Message variant='success'>Paid on {order.paymentDate}</Message>
-                  ) : (
-                    <Message variant='danger'>Not Paid</Message>
-                  )}
+                  
 
                   <p>
                     <strong>Payment Receipt : </strong>

@@ -47,10 +47,8 @@ jobs:
           export IMAGE_TAG=$(git rev-parse --short HEAD)
           envsubst < ./kubernetes/postgres/postgres-manifest.yaml > ./kubernetes/postgres/postgres-manifest-substituted.yaml
           envsubst < ./kubernetes/services/bookstore-account-service.yaml > ./kubernetes/services/bookstore-account-service-substituted.yaml
-          envsubst < ./kubernetes/services/bookstore-billing-service.yaml > ./kubernetes/services/bookstore-billing-service-substituted.yaml
           envsubst < ./kubernetes/services/bookstore-catalog-service.yaml > ./kubernetes/services/bookstore-catalog-service-substituted.yaml
           envsubst < ./kubernetes/services/bookstore-order-service.yaml > ./kubernetes/services/bookstore-order-service-substituted.yaml
-          envsubst < ./kubernetes/services/bookstore-payment-service.yaml > ./kubernetes/services/bookstore-payment-service-substituted.yaml
           envsubst < ./kubernetes/services/bookstore-api-gateway-service.yaml > ./kubernetes/services/bookstore-api-gateway-service-substituted.yaml
           envsubst < ./kubernetes/services/frontend-manifest.yaml > ./kubernetes/services/frontend-manifest-substituted.yaml
           envsubst < ./kubernetes/services/bookstore-ingress.yaml > ./kubernetes/services/bookstore-ingress-substituted.yaml
@@ -62,10 +60,8 @@ jobs:
           kubectl apply -f ./kubernetes/postgres/postgres-manifest-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
           kubectl apply -f ./kubernetes/services/bookstore-account-service-substituted.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-billing-service-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-payment-service-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service-substituted.yaml
           kubectl apply -f ./kubernetes/services/frontend-manifest-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml

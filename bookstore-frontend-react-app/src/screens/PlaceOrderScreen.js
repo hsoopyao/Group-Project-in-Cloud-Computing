@@ -25,9 +25,7 @@ const PlaceOrderScreen = (props) => {
     props.history.push('/shipping');
   } else if (!order.billingAddressId) {
     props.history.push('/shipping');
-  } else if (!order.paymentMethodId) {
-    props.history.push('/payment');
-  }
+  } 
 
   useEffect(() => {
     previewOrder();
@@ -76,11 +74,7 @@ const PlaceOrderScreen = (props) => {
                 </p>
               </ListGroup.Item>
 
-              <ListGroup.Item>
-                <h2>Payment Method</h2>
-                <strong>Method: </strong>
-                {previewOrderResponse.card.cardBrand.toUpperCase()} - **** **** **** {previewOrderResponse.card.last4Digits}
-              </ListGroup.Item>
+              
 
               <ListGroup.Item>
                 <h2>Order Items</h2>

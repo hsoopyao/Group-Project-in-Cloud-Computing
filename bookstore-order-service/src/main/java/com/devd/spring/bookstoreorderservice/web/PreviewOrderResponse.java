@@ -1,6 +1,6 @@
 package com.devd.spring.bookstoreorderservice.web;
 
-import com.devd.spring.bookstorecommons.web.GetAddressResponse;
+
 import com.devd.spring.bookstoreorderservice.repository.dao.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -49,8 +49,8 @@ public class Order extends DateAudit {
     @Column(name = "TOTAL_ORDER_PRICE", nullable = false)
     private double totalOrderPrice;
 
-    @Column(name = "PAYMENT_METHOD_ID", nullable = false)
-    private String paymentMethodId;
+//    @Column(name = "PAYMENT_METHOD_ID", nullable = false)
+//    private String paymentMethodId;
 
     @Column(name = "TAX_PRICE", nullable = false)
     private double taxPrice;
@@ -61,14 +61,14 @@ public class Order extends DateAudit {
     @Column(name = "IS_PAID")
     private boolean isPaid;
 
-    @Column(name = "PAYMENT_ID")
-    private String paymentId;
-
-    @Column(name = "PAYMENT_DATE")
-    private LocalDateTime paymentDate;
-
-    @Column(name = "PAYMENT_RECEIPT_URL")
-    private String paymentReceiptUrl;
+//    @Column(name = "PAYMENT_ID")
+//    private String paymentId;
+//
+//    @Column(name = "PAYMENT_DATE")
+//    private LocalDateTime paymentDate;
+//
+//    @Column(name = "PAYMENT_RECEIPT_URL")
+//    private String paymentReceiptUrl;
 
     @Column(name = "DELIVERED_DATE")
     private LocalDateTime deliveredDate;
