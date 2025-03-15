@@ -19,6 +19,34 @@ Key DevOps Goals:
 - Recover from database crashes or node failures.
 - Deploy updates to the catalog service without downtime.
 
+Achievement:
+- Scalability
+  - Horizontal Pod Autoscaling (HPA): Configure HPA for the Catalog Service (scale pods when CPU > 60%)
+  - Cluster Autoscaling: Use Azure Kubernetes Service Cluster Autoscaler to add worker nodes when pods can’t schedule
+  - Load Testing: Simulate traffic with k6 (e.g., ramp up to 500 users over 5 minutes)
+- Recovery
+  - Liveness/Readiness Probes: Add probes to the Cart Service to restart unresponsive pods
+  - Database Backups: Use Velero to back up PostgreSQL daily to Azure
+  - StatefulSet for PostgreSQL: Deploy PostgreSQL as a StatefulSet with PersistentVolumes
+- Deployment
+  - Blue-Green Deployment: Deploy the new Catalog Service version alongside the old one; Use a Kubernetes Service to switch traffic from "blue" (v1) to "green" (v2)
+  - CI/CD Pipeline with Rollback: Use GitHub Actions to: Build and test the Catalog Service; Push Docker images to Azure; Deploy to Kubernetes; Roll back if tests fail
+
+Implementation Phases:
+- Phase 1: Baseline Deployment
+  - Develop and deploy the bookstore microservices on Kubernetes (cloud).
+  - Set up a basic CI/CD pipeline for the Frontend.
+- Phase 2: Scaling
+  - Configure HPA for the Catalog Service.
+  - Test scaling by simulating traffic with k6.
+- Phase 3: Resilience
+  - Add probes, deploy PostgreSQL as a StatefulSet, and configure Velero backups.
+  - Simulate a database crash and restore from S3.
+- Phase 4: Zero-Downtime Deployments
+  - Implement blue-green deployments for the Catalog Service.
+  - Demo a failed deployment followed by a rollback.
+
+
 <hr>
 
 ## Run this project in Local Machine
