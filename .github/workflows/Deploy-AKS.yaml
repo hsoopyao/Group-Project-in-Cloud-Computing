@@ -67,3 +67,20 @@ jobs:
           kubectl apply -f ./kubernetes/services/frontend-manifest-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
           kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml
+
+      - name: Wait for Deployment to be Ready
+        run: |
+          set -e
+          kubectl rollout status deployment bookstore-account-service -n bookstore --timeout=60s || exit 1
+          kubectl rollout status deployment bookstore-catalog-service -n bookstore --timeout=60s || exit 1
+          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=60s || exit 1
+          kubectl rollout status deployment bookstore-api-gateway-service -n bookstore --timeout=60s || exit 1
+
+      - name: Rollback on Failure
+        if: failure()
+        run: |
+          echo "Deployment failed, rolling back..."
+          kubectl rollout undo deployment bookstore-account-service -n bookstore
+          kubectl rollout undo deployment bookstore-catalog-service -n bookstore
+          kubectl rollout undo deployment bookstore-order-service -n bookstore
+          kubectl rollout undo deployment bookstore-api-gateway-service -n bookstore
