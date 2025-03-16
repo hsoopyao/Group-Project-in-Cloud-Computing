@@ -4,6 +4,7 @@ metadata:
   name: bookstore-order-service
   namespace: bookstore
 spec:
+  revisionHistoryLimit: 1
   replicas: 1
   selector:
     matchLabels:
@@ -13,6 +14,7 @@ spec:
       labels:
         app: bookstore-order-service
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
         - name: bookstore-order-service
           image: bookstoreapplicationregistry.azurecr.io/bookstore-order-service:${IMAGE_TAG}
