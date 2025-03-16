@@ -14,7 +14,7 @@ spec:
       labels:
         app: bookstore-order-service
     spec:
-      terminationGracePeriodSeconds: 10
+      terminationGracePeriodSeconds: 30
       containers:
         - name: bookstore-order-service
           image: bookstoreapplicationregistry.azurecr.io/bookstore-order-service:${IMAGE_TAG}
@@ -32,15 +32,17 @@ spec:
             httpGet:
               path: /actuator/health
               port: 7001
-            initialDelaySeconds: 30
+            initialDelaySeconds: 40
             periodSeconds: 10
             failureThreshold: 3
+
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 7001
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
 #          resources:
 #            requests:
 #              memory: "256Mi"
