@@ -27,12 +27,14 @@ spec:
               value: "bookstore-zipkin:9411"
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m -XX:+UseG1GC"
           resources:
             requests:
               memory: "256Mi"
               cpu: "400m"
             limits:
-              memory: "256Mi"
+              memory: "1024Mi"
               cpu: "800m"
 ---
 apiVersion: v1
