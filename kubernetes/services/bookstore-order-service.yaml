@@ -14,7 +14,7 @@ spec:
       labels:
         app: bookstore-order-service
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 10
       containers:
         - name: bookstore-order-service
           image: bookstoreapplicationregistry.azurecr.io/bookstore-order-service:${IMAGE_TAG}
