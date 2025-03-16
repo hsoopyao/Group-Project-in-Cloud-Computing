@@ -54,7 +54,6 @@ jobs:
           envsubst < ./kubernetes/services/bookstore-ingress.yaml > ./kubernetes/services/bookstore-ingress-substituted.yaml
           envsubst < ./kubernetes/monitors/prometheus-manifest.yaml > ./kubernetes/monitors/prometheus-manifest-substituted.yaml
 
-
       - name: Deploy-AKS
         run: |
           kubectl apply -f ./kubernetes/postgres/postgres-manifest-substituted.yaml
@@ -67,6 +66,10 @@ jobs:
           kubectl apply -f ./kubernetes/services/frontend-manifest-substituted.yaml
           kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
           kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml
+
+      - name: Delete useless ReplicaSet
+        run: |
+          kubectl get rs -n bookstore --no-headers | awk '$2==0 {print $1}' | xargs kubectl delete rs -n bookstore
 
       - name: Wait for Deployment to be Ready
         run: |
