@@ -75,6 +75,15 @@ jobs:
           echo "Checking for stuck Pods..."
           kubectl get pods -n bookstore | grep "bookstore-catalog-service" | grep Terminating || true
           kubectl delete pods -n bookstore --field-selector=status.phase==Terminating --grace-period=0 --force || true
+          kubectl delete pod -n bookstore $(kubectl get pods -n bookstore | grep bookstore-order-service | grep "ContainerStatusUnknown" | awk '{print $1}') --grace-period=0 --force --ignore-not-found --wait=false || true
+
+      - name: Ensure old bookstore-order-service pods are deleted
+        run: |
+          echo "Ensuring old bookstore-order-service pods are deleted..."
+          kubectl get pods -n bookstore | grep bookstore-order-service || true
+          kubectl delete pod -n bookstore $(kubectl get pods -n bookstore | grep bookstore-order-service | grep "ContainerStatusUnknown" | awk '{print $1}') --grace-period=0 --force --ignore-not-found --wait=false || true
+          kubectl wait --for=delete pod -n bookstore -l app=bookstore-order-service --timeout=60s || true
+    
 
       - name: Scale up bookstore-catalog-service after deployment
         run: |
