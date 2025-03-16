@@ -54,6 +54,11 @@ jobs:
           envsubst < ./kubernetes/services/bookstore-ingress.yaml > ./kubernetes/services/bookstore-ingress-substituted.yaml
           envsubst < ./kubernetes/monitors/prometheus-manifest.yaml > ./kubernetes/monitors/prometheus-manifest-substituted.yaml
 
+      - name: Scale down bookstore-catalog-service before deployment
+        run: |
+          echo "Scaling down bookstore-catalog-service to 1 replica to avoid HPA issues..."
+          kubectl scale deployment bookstore-catalog-service --replicas=1 -n bookstore || true
+
       - name: Deploy-AKS
         run: |
           kubectl apply -f ./kubernetes/postgres/postgres-manifest-substituted.yaml
@@ -67,9 +72,9 @@ jobs:
           kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
           kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml
 
-#      - name: Delete useless ReplicaSet
-#        run: |
-#          kubectl get rs -n bookstore --no-headers | awk '$2==0 {print $1}' | xargs kubectl delete rs -n bookstore
+      - name: Delete old ReplicaSets (clean up)
+        run: |
+          kubectl get rs -n bookstore --no-headers | awk '$2==0 {print $1}' | xargs -r kubectl delete rs -n bookstore
 
       - name: Wait for Deployment to be Ready
         run: |
@@ -83,7 +88,11 @@ jobs:
         if: failure()
         run: |
           echo "Deployment failed, rolling back..."
-          kubectl rollout undo deployment bookstore-account-service -n bookstore
-          kubectl rollout undo deployment bookstore-catalog-service -n bookstore
-          kubectl rollout undo deployment bookstore-order-service -n bookstore
-          kubectl rollout undo deployment bookstore-api-gateway-service -n bookstore
+          for service in bookstore-account-service bookstore-catalog-service bookstore-order-service bookstore-api-gateway-service; do
+            if kubectl rollout history deployment/$service -n bookstore | grep -q "REVISION"; then
+              echo "Rolling back $service..."
+              kubectl rollout undo deployment/$service -n bookstore
+            else
+              echo "No rollback history found for $service, skipping..."
+            fi
+          done
