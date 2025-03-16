@@ -13,6 +13,7 @@ spec:
       labels:
         app: bookstore-catalog-service
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: bookstore-catalog-service
           image: bookstoreapplicationregistry.azurecr.io/bookstore-catalog-service:${IMAGE_TAG}
