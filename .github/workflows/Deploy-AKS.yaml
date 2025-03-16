@@ -80,10 +80,24 @@ jobs:
         run: |
           echo "Checking and deleting stuck bookstore-order-service Pods..."
           kubectl get pods -n bookstore | grep bookstore-order-service || true
+          
           kubectl delete pod -n bookstore --field-selector=status.phase==Failed --grace-period=0 --force || true
-          kubectl delete pod -n bookstore $(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Terminating" | awk '{print $1}') --grace-period=0 --force --ignore-not-found --wait=false || true
-    
-    
+          
+          EVICTED_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Evicted" | awk '{print $1}')
+          if [[ -n "$EVICTED_PODS" ]]; then
+          echo "Deleting evicted bookstore-order-service pods: $EVICTED_PODS"
+          kubectl delete pod -n bookstore $EVICTED_PODS --grace-period=0 --force --ignore-not-found --wait=false
+          else
+          echo "No evicted bookstore-order-service pods found."
+          fi
+          
+          TERMINATING_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Terminating" | awk '{print $1}')
+          if [[ -n "$TERMINATING_PODS" ]]; then
+          echo "Force deleting terminating bookstore-order-service pods: $TERMINATING_PODS"
+          kubectl delete pod -n bookstore $TERMINATING_PODS --grace-period=0 --force --ignore-not-found --wait=false
+          else
+          echo "No terminating bookstore-order-service pods found."
+          fi
 
       - name: Scale up bookstore-catalog-service after deployment
         run: |
