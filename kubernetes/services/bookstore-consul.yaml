@@ -13,8 +13,6 @@ spec:
       labels:
         app: bookstore-consul-discovery
     spec:
-      imagePullSecrets:
-        - name: acr-secret
       containers:
         - name: consul
           image: consul:1.15.4
