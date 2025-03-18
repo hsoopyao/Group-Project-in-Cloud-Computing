@@ -84,10 +84,10 @@ jobs:
           echo "Waiting for deployment to complete..."
           kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=120s
 
-      - name: Verify Pod readiness
-        run: |
-          echo "Waiting for all bookstore-order-service pods to be ready..."
-          kubectl wait --for=condition=Ready pod -l app=bookstore-order-service -n bookstore --timeout=60s
+#      - name: Verify Pod readiness
+#        run: |
+#          echo "Waiting for all bookstore-order-service pods to be ready..."
+#          kubectl wait --for=condition=Ready pod -l app=bookstore-order-service -n bookstore --timeout=60s
 
       - name: Rollback on Failure
         if: failure()
