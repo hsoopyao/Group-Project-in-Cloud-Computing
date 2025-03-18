@@ -70,6 +70,11 @@ jobs:
             echo "No terminating bookstore-order-service pods found."
           fi
 
+      - name: Force Delete
+        run: |
+          echo "Force deleting Order service"
+          kubectl delete pod -n bookstore -l app=bookstore-order-service --grace-period=0 --force --ignore-not-found --wait=false
+
       - name: Deploy Order Service
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml

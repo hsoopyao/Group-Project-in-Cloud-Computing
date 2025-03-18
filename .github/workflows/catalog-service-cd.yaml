@@ -70,7 +70,8 @@ jobs:
 
       - name: Deploy New Version
         run: |
-          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml -n bookstore
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-blue-substituted.yaml -n bookstore
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-green-substituted.yaml -n bookstore
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml -n bookstore
 
       - name: Switch Traffic to New Version
