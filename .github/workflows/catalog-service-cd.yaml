@@ -54,7 +54,7 @@ jobs:
       - name: Get Current Active Version
         id: active-version
         run: |
-          CURRENT_VERSION=$(kubectl get svc bookstore-catalog-service -o=jsonpath='{.spec.selector.version}')
+          CURRENT_VERSION=$(kubectl get svc bookstore-catalog-service -n bookstore -o=jsonpath='{.spec.selector.version}')
           echo "Current version is $CURRENT_VERSION"
           if [[ "$CURRENT_VERSION" == "blue" ]]; then
             echo "NEW_VERSION=green" >> $GITHUB_ENV
