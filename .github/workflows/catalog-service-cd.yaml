@@ -81,9 +81,9 @@ jobs:
       - name: Cleanup Old Version
         run: |
           if [[ "${{ env.NEW_VERSION }}" == "blue" ]]; then
-           kubectl delete deployment bookstore-catalog-green -n bookstore
+           kubectl delete deployment bookstore-catalog-service-green -n bookstore
           else
-           kubectl delete deployment bookstore-catalog-blue -n bookstore
+           kubectl delete deployment bookstore-catalog-service-blue -n bookstore
           fi
 
       - name: Wait for Deployment
