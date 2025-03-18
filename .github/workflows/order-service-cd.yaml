@@ -46,29 +46,20 @@ jobs:
 
       - name: Force delete old bookstore-order-service pods
         run: |
-          echo "Force deleting existing bookstore-order-service pods..."
-          
-          kubectl delete pod -n bookstore -l app=bookstore-order-service --grace-period=0 --force --ignore-not-found || true
-          
-          while kubectl get pods -n bookstore -l app=bookstore-order-service | grep -q 'bookstore-order-service'; do
-            echo "Waiting for old bookstore-order-service pods to terminate..."
-            sleep 5
-          done
-          echo "All old bookstore-order-service pods deleted successfully."
+          kubectl scale deployment bookstore-order-service --replicas=0
+          echo "Waiting for all old bookstore-order-service pods to terminate..."
+          kubectl get pods -n bookstore | grep bookstore-order-service
+          sleep 10
+          kubectl scale deployment bookstore-order-service --replicas=1
 
       - name: Deploy Order Service
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
 
-      - name: Restart Deployment
-        run: |
-          echo "Restarting bookstore-order-service deployment..."
-          kubectl rollout restart deployment bookstore-order-service -n bookstore
-
       - name: Wait for Deployment to complete
         run: |
           echo "Waiting for deployment to complete..."
-          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=60s
+          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=120s
 
       - name: Verify Pod readiness
         run: |
