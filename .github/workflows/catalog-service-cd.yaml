@@ -1,4 +1,4 @@
-name: Deploy-AKS
+name: Deploy catalog service
 
 on:
   workflow_run:

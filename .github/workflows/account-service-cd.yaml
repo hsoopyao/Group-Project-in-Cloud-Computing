@@ -1,4 +1,4 @@
-name: Deploy-AKS
+name: Deploy account service
 
 on:
   workflow_run:

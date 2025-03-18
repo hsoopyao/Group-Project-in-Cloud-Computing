@@ -1,4 +1,4 @@
-name: Deploy-AKS
+name: Deploy api gateway service
 
 on:
   workflow_run:
