@@ -52,6 +52,29 @@ jobs:
           sleep 10
           kubectl scale deployment bookstore-order-service --replicas=1 -n bookstore
 
+      - name: Cleanup stuck bookstore-order-service pods
+        run: |
+          echo "Checking and force deleting stuck bookstore-order-service Pods..."
+          kubectl get pods -n bookstore | grep bookstore-order-service || true
+          
+          kubectl delete pod -n bookstore --field-selector=status.phase==Failed --grace-period=0 --force || true
+          
+          EVICTED_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Evicted" | awk '{print $1}')
+          if [[ -n "$EVICTED_PODS" ]]; then
+            echo "Deleting evicted bookstore-order-service pods: $EVICTED_PODS"
+            echo "$EVICTED_PODS" | xargs -r kubectl delete pod -n bookstore --grace-period=0 --force --ignore-not-found --wait=false
+          else
+            echo "No evicted bookstore-order-service pods found."
+          fi
+          
+          TERMINATING_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Terminating" | awk '{print $1}')
+          if [[ -n "$TERMINATING_PODS" ]]; then
+            echo "Force deleting terminating bookstore-order-service pods: $TERMINATING_PODS"
+            echo "$TERMINATING_PODS" | xargs -r kubectl delete pod -n bookstore --grace-period=0 --force --ignore-not-found --wait=false
+          else
+            echo "No terminating bookstore-order-service pods found."
+          fi
+
       - name: Deploy Order Service
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
