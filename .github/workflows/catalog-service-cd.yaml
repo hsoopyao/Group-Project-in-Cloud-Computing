@@ -81,8 +81,9 @@ jobs:
           
           for i in {1..5}; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6001/catalog/health)
+            echo $STATUS
             if [[ "$STATUS" == "200" ]]; then
-              echo "✅ Smoke test passed!"
+              echo "Smoke test passed!"
               exit 0
             fi
             echo "Waiting for service to be ready... ($i/5)"
@@ -90,7 +91,7 @@ jobs:
           done
       
           echo "Smoke test failed. Rolling back!"
-          kubectl delete deployment bookstore-catalog-${{ env.NEW_VERSION }} -n bookstore
+          kubectl delete deployment bookstore-catalog-service-${{ env.NEW_VERSION }} -n bookstore
           exit 1  # Fail the pipeline
 
       - name: Switch Traffic to New Version
