@@ -39,36 +39,16 @@ jobs:
           export IMAGE_TAG=$(git rev-parse --short HEAD)
           echo "IMAGE_TAG: $IMAGE_TAG"
 
-      - name: Scale down bookstore-catalog-service before deployment
-        run: |
-          echo "Checking active deployment..."
-          if kubectl get deployment bookstore-catalog-service-blue -n bookstore > /dev/null 2>&1; then
-            echo "Scaling down bookstore-catalog-service-blue..."
-            kubectl scale deployment bookstore-catalog-service-blue --replicas=0 -n bookstore || true
-          elif kubectl get deployment bookstore-catalog-service-green -n bookstore > /dev/null 2>&1; then
-            echo "Scaling down bookstore-catalog-service-green..."
-            kubectl scale deployment bookstore-catalog-service-green --replicas=0 -n bookstore || true
-          else
-            echo "No active bookstore-catalog-service found."
-          fi
-          sleep 5
-
-      - name: Delete stuck pods
-        run: |
-          echo "Checking for stuck Pods..."
-          kubectl get pods -n bookstore | grep "bookstore-catalog-service" | grep Terminating || true
-          kubectl delete pods -n bookstore --field-selector=status.phase==Terminating --grace-period=0 --force || true
-
-      - name: Get Current Active Version
-        id: active-version
-        run: |
-          CURRENT_VERSION=$(kubectl get svc bookstore-catalog-service -n bookstore -o=jsonpath='{.spec.selector.version}')
-          echo "Current version is $CURRENT_VERSION"
-          if [[ "$CURRENT_VERSION" == "blue" ]]; then
-            echo "NEW_VERSION=green" >> $GITHUB_ENV
-          else
-            echo "NEW_VERSION=blue" >> $GITHUB_ENV
-          fi
+#      - name: Get Current Active Version
+#        id: active-version
+#        run: |
+#          CURRENT_VERSION=$(kubectl get svc bookstore-catalog-service -n bookstore -o=jsonpath='{.spec.selector.version}')
+#          echo "Current version is $CURRENT_VERSION"
+#          if [[ "$CURRENT_VERSION" == "blue" ]]; then
+#            echo "NEW_VERSION=green" >> $GITHUB_ENV
+#          else
+#            echo "NEW_VERSION=blue" >> $GITHUB_ENV
+#          fi
 
       - name: Replace variables in Kubernetes manifest
         run: |
@@ -78,18 +58,18 @@ jobs:
 
       - name: Deploy New Version
         run: |
-          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml -n bookstore
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-blue-substituted.yaml -n bookstore
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml -n bookstore
-          kubectl apply -f ./kubernetes/configration/hpa-${{ env.NEW_VERSION }}.yaml -n bookstore
+          kubectl apply -f ./kubernetes/configration/hpa-blue.yaml -n bookstore
 
       - name: Switch Traffic to New Version
         run: |
-          kubectl patch svc bookstore-catalog-service -n bookstore -p '{"spec": {"selector": {"app": "bookstore-catalog-service", "version": "${{ env.NEW_VERSION }}"}}}'
+          kubectl patch svc bookstore-catalog-service -n bookstore -p '{"spec": {"selector": {"app": "bookstore-catalog-service", "version": "blue"}}}'
 
-      - name: Cleanup Old Version
-        run: |
-          if [[ "${{ env.NEW_VERSION }}" == "blue" ]]; then
-           kubectl delete deployment bookstore-catalog-service-green -n bookstore
-          else
-           kubectl delete deployment bookstore-catalog-service-blue -n bookstore
-          fi
+#      - name: Cleanup Old Version
+#        run: |
+#          if [[ "${{ env.NEW_VERSION }}" == "blue" ]]; then
+#           kubectl delete deployment bookstore-catalog-service-green -n bookstore
+#          else
+#           kubectl delete deployment bookstore-catalog-service-blue -n bookstore
+#          fi
