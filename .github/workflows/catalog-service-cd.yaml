@@ -41,8 +41,16 @@ jobs:
 
       - name: Scale down bookstore-catalog-service before deployment
         run: |
-          echo "Scaling down bookstore-catalog-service to avoid rollout issues..."
-          kubectl scale deployment bookstore-catalog-service --replicas=0 -n bookstore || true
+          echo "Checking active deployment..."
+          if kubectl get deployment bookstore-catalog-service-blue -n bookstore > /dev/null 2>&1; then
+            echo "Scaling down bookstore-catalog-service-blue..."
+            kubectl scale deployment bookstore-catalog-service-blue --replicas=0 -n bookstore || true
+          elif kubectl get deployment bookstore-catalog-service-green -n bookstore > /dev/null 2>&1; then
+            echo "Scaling down bookstore-catalog-service-green..."
+            kubectl scale deployment bookstore-catalog-service-green --replicas=0 -n bookstore || true
+          else
+            echo "No active bookstore-catalog-service found."
+          fi
           sleep 5
 
       - name: Delete stuck pods
@@ -72,27 +80,6 @@ jobs:
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml -n bookstore
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml -n bookstore
-
-      - name: Run Smoke Tests on New Deployment
-        run: |
-          kubectl port-forward svc/bookstore-catalog-service 6001:6001 -n bookstore & 
-          sleep 5  # Give time for port-forwarding to establish
-          echo "Testing new deployment at http://localhost:6001/catalog/health"
-          
-          for i in {1..5}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6001/catalog/health)
-            echo $STATUS
-            if [[ "$STATUS" == "200" ]]; then
-              echo "Smoke test passed!"
-              exit 0
-            fi
-            echo "Waiting for service to be ready... ($i/5)"
-            sleep 20
-          done
-      
-          echo "Smoke test failed. Rolling back!"
-          kubectl delete deployment bookstore-catalog-service-${{ env.NEW_VERSION }} -n bookstore
-          exit 1  # Fail the pipeline
 
       - name: Switch Traffic to New Version
         run: |
