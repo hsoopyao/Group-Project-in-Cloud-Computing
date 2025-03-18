@@ -101,13 +101,6 @@ jobs:
             fi
           done
 
-      - name: Force Delete Terminating Pods
-        run: |
-          for pod in $(kubectl get pods -n bookstore | grep Terminating | awk '{print $1}'); do
-            echo "Force deleting pod: $pod"
-            kubectl delete pod $pod -n bookstore --force --grace-period=0
-          done
-
       - name: Rollback on Failure
         if: failure()
         run: |
