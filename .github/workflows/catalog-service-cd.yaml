@@ -73,6 +73,25 @@ jobs:
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml -n bookstore
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml -n bookstore
 
+      - name: Run Smoke Tests on New Deployment
+        run: |
+          NEW_SERVICE_IP=$(kubectl get svc bookstore-catalog-service -o jsonpath='{.spec.clusterIP}')
+          echo "Testing new deployment at http://$NEW_SERVICE_IP:80/catalog/health"
+          
+          for i in {1..5}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$NEW_SERVICE_IP:80/catalog/health)
+            if [[ "$STATUS" == "200" ]]; then
+              echo "✅ Smoke test passed!"
+              exit 0
+            fi
+            echo "Waiting for service to be ready... ($i/5)"
+            sleep 10
+          done
+      
+          echo "Smoke test failed. Rolling back!"
+          kubectl delete deployment bookstore-catalog-${{ env.NEW_VERSION }}
+          exit 1  # Fail the pipeline
+
       - name: Switch Traffic to New Version
         run: |
           kubectl patch svc bookstore-catalog-service -n bookstore -p '{"spec": {"selector": {"app": "bookstore-catalog-service", "version": "${{ env.NEW_VERSION }}"}}}'
