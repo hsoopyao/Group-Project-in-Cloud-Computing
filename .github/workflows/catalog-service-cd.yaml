@@ -54,12 +54,12 @@ jobs:
       - name: Get Current Active Version
         id: active-version
         run: |
-          if [[ "$CURRENT_BACKEND" == "bookstore-catalog-blue-svc" ]]; then
+          CURRENT_VERSION=$(kubectl get svc bookstore-catalog-service -o=jsonpath='{.spec.selector.version}')
+          echo "Current version is $CURRENT_VERSION"
+          if [[ "$CURRENT_VERSION" == "blue" ]]; then
             echo "NEW_VERSION=green" >> $GITHUB_ENV
-            echo "NEW_SERVICE=bookstore-catalog-green-svc" >> $GITHUB_ENV
           else
             echo "NEW_VERSION=blue" >> $GITHUB_ENV
-            echo "NEW_SERVICE=bookstore-catalog-blue-svc" >> $GITHUB_ENV
           fi
 
       - name: Replace variables in Kubernetes manifest
