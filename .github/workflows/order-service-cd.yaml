@@ -46,11 +46,11 @@ jobs:
 
       - name: Force delete old bookstore-order-service pods
         run: |
-          kubectl scale deployment bookstore-order-service --replicas=0
+          kubectl scale deployment bookstore-order-service --replicas=0 -n bookstorez
           echo "Waiting for all old bookstore-order-service pods to terminate..."
           kubectl get pods -n bookstore | grep bookstore-order-service
           sleep 10
-          kubectl scale deployment bookstore-order-service --replicas=1
+          kubectl scale deployment bookstore-order-service --replicas=1 -n bookstore
 
       - name: Deploy Order Service
         run: |
