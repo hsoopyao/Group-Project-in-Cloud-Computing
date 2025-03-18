@@ -80,6 +80,7 @@ jobs:
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml -n bookstore
           kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml -n bookstore
+          kubectl apply -f ./kubernetes/configration/hpa-${{ env.NEW_VERSION }}.yaml -n bookstore
 
       - name: Switch Traffic to New Version
         run: |

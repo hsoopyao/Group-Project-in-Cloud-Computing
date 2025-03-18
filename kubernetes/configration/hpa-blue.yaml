@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: catalog-service-hpa
+  name: catalog-service-blue-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: bookstore-catalog-service  
+    name: bookstore-catalog-service-blue
   minReplicas: 2
   maxReplicas: 8  # we can change the number as needed
   metrics:
