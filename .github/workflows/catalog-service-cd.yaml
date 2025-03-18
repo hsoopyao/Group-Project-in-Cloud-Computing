@@ -75,11 +75,12 @@ jobs:
 
       - name: Run Smoke Tests on New Deployment
         run: |
-          NEW_SERVICE_IP=$(kubectl get svc bookstore-catalog-service -n bookstore -o jsonpath='{.spec.clusterIP}')
-          echo "Testing new deployment at http://$NEW_SERVICE_IP:80/catalog/health"
+          kubectl port-forward svc/${{ env.NEW_SERVICE }} 8080:80 -n bookstore & 
+          sleep 5  # Give time for port-forwarding to establish
+          echo "Testing new deployment at http://localhost:8080/catalog/health"
           
           for i in {1..5}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$NEW_SERVICE_IP:80/catalog/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/catalog/health)
             if [[ "$STATUS" == "200" ]]; then
               echo "✅ Smoke test passed!"
               exit 0
