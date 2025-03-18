@@ -49,10 +49,8 @@ jobs:
           echo "Checking and force deleting stuck bookstore-order-service Pods..."
           kubectl get pods -n bookstore | grep bookstore-order-service || true
           
-          # 删除 Failed Pods
           kubectl delete pod -n bookstore --field-selector=status.phase==Failed --grace-period=0 --force || true
-          
-          # 删除 Evicted Pods
+        
           EVICTED_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Evicted" | awk '{print $1}')
           if [[ -n "$EVICTED_PODS" ]]; then
             echo "Deleting evicted bookstore-order-service pods: $EVICTED_PODS"
@@ -61,7 +59,6 @@ jobs:
             echo "No evicted bookstore-order-service pods found."
           fi
           
-          # 删除 Terminating Pods
           TERMINATING_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Terminating" | awk '{print $1}')
           if [[ -n "$TERMINATING_PODS" ]]; then
             echo "Force deleting terminating bookstore-order-service pods: $TERMINATING_PODS"
@@ -70,26 +67,24 @@ jobs:
             echo "No terminating bookstore-order-service pods found."
           fi
 
-      - name: Force Delete
-        run: |
-          echo "Force deleting Order service"
-          kubectl delete pod -n bookstore -l app=bookstore-order-service --grace-period=0 --force --ignore-not-found --wait=false
-
       - name: Deploy Order Service
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
 
+      - name: Wait for new Pods to be ready
+        run: |
+          kubectl wait --for=condition=Ready pod -l app=bookstore-order-service -n bookstore --timeout=300s
+
       - name: Wait for Deployment
         run: |
-          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=60s
+          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=300s
 
       - name: Rollback on Failure
         if: failure()
         run: |
-          echo "Deployment failed, rolling back..."
           if kubectl rollout history deployment/bookstore-order-service -n bookstore | grep -q "REVISION"; then
             echo "Rolling back bookstore-order-service..."
             kubectl rollout undo deployment/bookstore-order-service -n bookstore
           else
-            echo "No rollback history found for bookstore-order-service, skipping..."
+            echo "No rollback history found, skipping..."
           fi
