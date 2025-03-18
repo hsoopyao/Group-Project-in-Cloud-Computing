@@ -43,10 +43,6 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 3
-          lifecycle:
-            preStop:
-              exec:
-                command: [ "sh", "-c", "sleep 10" ]
 #          resources:
 #            requests:
 #              memory: "128Mi"

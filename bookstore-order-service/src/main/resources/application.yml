@@ -29,9 +29,17 @@ logging:
     com.devd.spring.*: DEBUG
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health
   endpoint:
     hystrix:
       stream:
+        enabled: true
+    health:
+      show-details: always
+      probes:
         enabled: true
 
 ---
