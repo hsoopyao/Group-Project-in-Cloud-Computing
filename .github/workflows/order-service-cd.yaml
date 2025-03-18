@@ -44,47 +44,43 @@ jobs:
           export IMAGE_TAG=$(git rev-parse --short HEAD)
           envsubst < ./kubernetes/services/bookstore-order-service.yaml > ./kubernetes/services/bookstore-order-service-substituted.yaml
 
-      - name: Cleanup stuck bookstore-order-service pods
+      - name: Force delete old bookstore-order-service pods
         run: |
-          echo "Checking and force deleting stuck bookstore-order-service Pods..."
-          kubectl get pods -n bookstore | grep bookstore-order-service || true
+          echo "Force deleting existing bookstore-order-service pods..."
           
-          kubectl delete pod -n bookstore --field-selector=status.phase==Failed --grace-period=0 --force || true
-        
-          EVICTED_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Evicted" | awk '{print $1}')
-          if [[ -n "$EVICTED_PODS" ]]; then
-            echo "Deleting evicted bookstore-order-service pods: $EVICTED_PODS"
-            echo "$EVICTED_PODS" | xargs -r kubectl delete pod -n bookstore --grace-period=0 --force --ignore-not-found --wait=false
-          else
-            echo "No evicted bookstore-order-service pods found."
-          fi
+          kubectl delete pod -n bookstore -l app=bookstore-order-service --grace-period=0 --force --ignore-not-found || true
           
-          TERMINATING_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Terminating" | awk '{print $1}')
-          if [[ -n "$TERMINATING_PODS" ]]; then
-            echo "Force deleting terminating bookstore-order-service pods: $TERMINATING_PODS"
-            echo "$TERMINATING_PODS" | xargs -r kubectl delete pod -n bookstore --grace-period=0 --force --ignore-not-found --wait=false
-          else
-            echo "No terminating bookstore-order-service pods found."
-          fi
+          while kubectl get pods -n bookstore -l app=bookstore-order-service | grep -q 'bookstore-order-service'; do
+            echo "Waiting for old bookstore-order-service pods to terminate..."
+            sleep 5
+          done
+          echo "All old bookstore-order-service pods deleted successfully."
 
       - name: Deploy Order Service
         run: |
           kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
 
-      - name: Wait for new Pods to be ready
+      - name: Restart Deployment
         run: |
-          kubectl wait --for=condition=Ready pod -l app=bookstore-order-service -n bookstore --timeout=300s
+          echo "Restarting bookstore-order-service deployment..."
+          kubectl rollout restart deployment bookstore-order-service -n bookstore
 
-      - name: Wait for Deployment
+      - name: Wait for Deployment to complete
         run: |
-          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=300s
+          echo "Waiting for deployment to complete..."
+          kubectl rollout status deployment bookstore-order-service -n bookstore --timeout=60s
+
+      - name: Verify Pod readiness
+        run: |
+          echo "Waiting for all bookstore-order-service pods to be ready..."
+          kubectl wait --for=condition=Ready pod -l app=bookstore-order-service -n bookstore --timeout=60s
 
       - name: Rollback on Failure
         if: failure()
         run: |
           if kubectl rollout history deployment/bookstore-order-service -n bookstore | grep -q "REVISION"; then
             echo "Rolling back bookstore-order-service..."
-            kubectl rollout undo deployment/bookstore-order-service -n bookstore
+            kubectl rollout undo deployment bookstore-order-service -n bookstore
           else
             echo "No rollback history found, skipping..."
           fi
