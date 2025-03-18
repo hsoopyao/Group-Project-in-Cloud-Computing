@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-catalog-service-green
+  namespace: bookstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-catalog-service
+      version: green
+  template:
+    metadata:
+      labels:
+        app: bookstore-catalog-service
+        version: green
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: bookstore-catalog-service
+          image: bookstoreapplicationregistry.azurecr.io/bookstore-catalog-service:${IMAGE_TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 6001
+          env:
+            - name: SERVER_PORT
+              value: "6001"
+            - name: ZIPKIN_HOST
+              value: "bookstore-zipkin:9411"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m -XX:+UseG1GC"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "1024Mi"
+              cpu: "800m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore-catalog-service
+  namespace: bookstore
+spec:
+  selector:
+    app: bookstore-catalog-service-blue-svc
+    version: blue
+  ports:
+    - protocol: TCP
+      port: 6001
+      targetPort: 6001
