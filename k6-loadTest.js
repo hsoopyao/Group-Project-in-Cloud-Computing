@@ -10,7 +10,7 @@ export let options = {
 };
 
 export default function () {
-    let res = http.get('http://131.145.96.19/');
+    let res = http.get('http://131.145.96.19/api/catalog/products?page=0&size=8');
     check(res, { 'status is 200': (r) => r.status === 200 });
     sleep(1);
 }
