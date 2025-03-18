@@ -28,21 +28,21 @@ spec:
               value: "bookstore-zipkin:9411"
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 7001
-            initialDelaySeconds: 40
-            periodSeconds: 10
-            failureThreshold: 3
-
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 7001
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            failureThreshold: 3
+#          livenessProbe:
+#            httpGet:
+#              path: /actuator/health/liveness
+#              port: 7001
+#            initialDelaySeconds: 40
+#            periodSeconds: 10
+#            failureThreshold: 3
+#
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health/readiness
+#              port: 7001
+#            initialDelaySeconds: 15
+#            periodSeconds: 10
+#            failureThreshold: 3
 #          resources:
 #            requests:
 #              memory: "128Mi"
