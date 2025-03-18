@@ -38,17 +38,17 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "800m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bookstore-catalog-service-blue-svc
-  namespace: bookstore
-spec:
-  selector:
-    app: bookstore-catalog-service
-    version: blue
-  ports:
-    - protocol: TCP
-      port: 6001
-      targetPort: 6001
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: bookstore-catalog-service-blue-svc
+#  namespace: bookstore
+#spec:
+#  selector:
+#    app: bookstore-catalog-service
+#    version: blue
+#  ports:
+#    - protocol: TCP
+#      port: 6001
+#      targetPort: 6001
