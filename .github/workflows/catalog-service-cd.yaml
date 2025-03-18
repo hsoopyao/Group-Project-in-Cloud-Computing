@@ -75,7 +75,7 @@ jobs:
 
       - name: Run Smoke Tests on New Deployment
         run: |
-          kubectl port-forward svc/${{ env.NEW_SERVICE }} 8080:80 -n bookstore & 
+          kubectl port-forward svc/bookstore-catalog-service 8080:80 -n bookstore & 
           sleep 5  # Give time for port-forwarding to establish
           echo "Testing new deployment at http://localhost:8080/catalog/health"
           
