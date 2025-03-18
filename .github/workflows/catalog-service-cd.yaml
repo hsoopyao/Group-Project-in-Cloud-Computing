@@ -75,7 +75,7 @@ jobs:
 
       - name: Switch Traffic to New Version
         run: |
-          kubectl patch svc bookstore-catalog-service -p '{"spec": {"selector": {"app": "bookstore-catalog-service", "version": "${{ env.NEW_VERSION }}"}}}'
+          kubectl patch svc bookstore-catalog-service -n bookstore -p '{"spec": {"selector": {"app": "bookstore-catalog-service", "version": "${{ env.NEW_VERSION }}"}}}'
 
       - name: Cleanup Old Version
         run: |
