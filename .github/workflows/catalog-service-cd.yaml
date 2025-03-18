@@ -70,8 +70,8 @@ jobs:
 
       - name: Deploy New Version
         run: |
-          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml
-          kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml -n bookstore
+          kubectl apply -f ./kubernetes/services/bookstore-catalog-service.yaml -n bookstore
 
       - name: Switch Traffic to New Version
         run: |
@@ -80,9 +80,9 @@ jobs:
       - name: Cleanup Old Version
         run: |
           if [[ "${{ env.NEW_VERSION }}" == "blue" ]]; then
-           kubectl delete deployment bookstore-catalog-green
+           kubectl delete deployment bookstore-catalog-green -n bookstore
           else
-           kubectl delete deployment bookstore-catalog-blue
+           kubectl delete deployment bookstore-catalog-blue -n bookstore
           fi
 
       - name: Wait for Deployment
