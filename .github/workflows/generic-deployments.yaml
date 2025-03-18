@@ -1,0 +1,57 @@
+name: Deploy-AKS
+
+on:
+  workflow_run:
+    workflows:
+      - CI Pipelines
+    types:
+      - completed
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS Context
+        run: az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Install envsubst
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext-base
+
+      - name: Set environment variables
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          echo "IMAGE_TAG: $IMAGE_TAG"
+
+      - name: Replace variables in Kubernetes manifest
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          envsubst < ./kubernetes/postgres/postgres-manifest.yaml > ./kubernetes/postgres/postgres-manifest-substituted.yaml
+          envsubst < ./kubernetes/services/frontend-manifest.yaml > ./kubernetes/services/frontend-manifest-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-ingress.yaml > ./kubernetes/services/bookstore-ingress-substituted.yaml
+          envsubst < ./kubernetes/monitors/prometheus-manifest.yaml > ./kubernetes/monitors/prometheus-manifest-substituted.yaml
+
+      - name: Deploy-AKS
+        run: |
+          kubectl apply -f ./kubernetes/postgres/postgres-manifest-substituted.yaml
+          kubectl apply -f ./kubernetes/monitors/zipkin-manifest.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
+          kubectl apply -f ./kubernetes/services/frontend-manifest-substituted.yaml
+          kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
+          kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml

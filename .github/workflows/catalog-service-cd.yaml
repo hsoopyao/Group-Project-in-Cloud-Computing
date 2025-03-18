@@ -1,0 +1,100 @@
+name: Deploy catalog service
+
+on:
+  workflow_run:
+    workflows:
+      - CI Pipelines
+    types:
+      - completed
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS Context
+        run: az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Install envsubst
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext-base
+
+      - name: Set environment variables
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          echo "IMAGE_TAG: $IMAGE_TAG"
+
+      - name: Scale down bookstore-catalog-service before deployment
+        run: |
+          echo "Scaling down bookstore-catalog-service to avoid rollout issues..."
+          kubectl scale deployment bookstore-catalog-service --replicas=0 -n bookstore || true
+          sleep 5
+
+      - name: Delete stuck pods
+        run: |
+          echo "Checking for stuck Pods..."
+          kubectl get pods -n bookstore | grep "bookstore-catalog-service" | grep Terminating || true
+          kubectl delete pods -n bookstore --field-selector=status.phase==Terminating --grace-period=0 --force || true
+
+      - name: Get Current Active Version
+        id: active-version
+        run: |
+          if [[ "$CURRENT_BACKEND" == "bookstore-catalog-blue-svc" ]]; then
+            echo "NEW_VERSION=green" >> $GITHUB_ENV
+            echo "NEW_SERVICE=bookstore-catalog-green-svc" >> $GITHUB_ENV
+          else
+            echo "NEW_VERSION=blue" >> $GITHUB_ENV
+            echo "NEW_SERVICE=bookstore-catalog-blue-svc" >> $GITHUB_ENV
+          fi
+
+      - name: Replace variables in Kubernetes manifest
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          envsubst < ./kubernetes/services/bookstore-catalog-service-blue.yaml > ./kubernetes/services/bookstore-catalog-service-blue-substituted.yaml
+          envsubst < ./kubernetes/services/bookstore-catalog-service-green.yaml > ./kubernetes/services/bookstore-catalog-service-green-substituted.yaml
+
+      - name: Deploy New Version
+        run: |
+          kubectl apply -f bookstore-catalog-service-${{ env.NEW_VERSION }}-substituted.yaml
+
+      - name: Switch Traffic to New Version
+        run: |
+          kubectl patch svc bookstore-catalog-service -p '{"spec": {"selector": {"app": "bookstore-catalog", "version": "${{ env.NEW_VERSION }}"}}}'
+
+      - name: Cleanup Old Version
+        run: |
+          if [[ "${{ env.NEW_VERSION }}" == "blue" ]]; then
+           kubectl delete deployment bookstore-catalog-green
+          else
+           kubectl delete deployment bookstore-catalog-blue
+          fi
+
+      - name: Wait for Deployment
+        run: |
+          kubectl rollout status deployment bookstore-catalog-service -n bookstore --timeout=60s
+
+      - name: Rollback on Failure
+        if: failure()
+        run: |
+          echo "Deployment failed, rolling back..."
+          if kubectl rollout history deployment/bookstore-catalog-service -n bookstore | grep -q "REVISION"; then
+            echo "Rolling back bookstore-catalog-service..."
+            kubectl rollout undo deployment/bookstore-catalog-service -n bookstore
+          else
+            echo "No rollback history found for bookstore-catalog-service, skipping..."
+          fi
