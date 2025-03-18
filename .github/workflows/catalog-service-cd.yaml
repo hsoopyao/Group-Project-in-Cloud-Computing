@@ -75,12 +75,12 @@ jobs:
 
       - name: Run Smoke Tests on New Deployment
         run: |
-          kubectl port-forward svc/bookstore-catalog-service 8080:80 -n bookstore & 
+          kubectl port-forward svc/bookstore-catalog-service 6001:6001 -n bookstore & 
           sleep 5  # Give time for port-forwarding to establish
-          echo "Testing new deployment at http://localhost:8080/catalog/health"
+          echo "Testing new deployment at http://localhost:6001/catalog/health"
           
           for i in {1..5}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/catalog/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6001/catalog/health)
             if [[ "$STATUS" == "200" ]]; then
               echo "✅ Smoke test passed!"
               exit 0
