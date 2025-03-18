@@ -34,11 +34,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gettext-base
 
-      - name: Set environment variables
-        run: |
-          export IMAGE_TAG=$(git rev-parse --short HEAD)
-          echo "IMAGE_TAG: $IMAGE_TAG"
-
       - name: Replace variables in Kubernetes manifest
         run: |
           export IMAGE_TAG=$(git rev-parse --short HEAD)
