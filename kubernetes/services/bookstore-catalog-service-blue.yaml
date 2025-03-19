@@ -30,7 +30,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
             - name: JAVA_OPTS
-              value: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ActiveProcessorCount=2"
+              value: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=4 -XX:ConcGCThreads=2"
           resources:
             requests:
               memory: "256Mi"
@@ -38,4 +38,16 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "800m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 6001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 6001
+            initialDelaySeconds: 40
+            periodSeconds: 5
 
