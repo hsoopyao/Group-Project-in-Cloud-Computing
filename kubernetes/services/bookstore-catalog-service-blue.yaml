@@ -4,7 +4,7 @@ metadata:
   name: bookstore-catalog-service-blue
   namespace: bookstore
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: bookstore-catalog-service
@@ -38,18 +38,18 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "800m"
-#          livenessProbe:
-#            httpGet:
-#              path: /actuator/health
-#              port: 6001
-#            initialDelaySeconds: 90
-#            periodSeconds: 10
-#            failureThreshold: 5
-#          readinessProbe:
-#            httpGet:
-#              path: /actuator/health
-#              port: 6001
-#            initialDelaySeconds: 120
-#            periodSeconds: 5
-#            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 6001
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 6001
+            initialDelaySeconds: 90
+            periodSeconds: 5
+            failureThreshold: 30
 
