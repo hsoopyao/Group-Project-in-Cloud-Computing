@@ -26,7 +26,7 @@ spring:
 
 logging:
   level:
-    com.devd.spring.*: DEBUG
+    com.devd.spring.*: INFO
 
 management:
   endpoints:

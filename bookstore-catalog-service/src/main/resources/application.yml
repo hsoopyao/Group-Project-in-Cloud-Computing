@@ -32,7 +32,7 @@ spring:
 
 logging:
   level:
-    com.devd.spring.*: DEBUG
+    com.devd.spring.*: INFO
 
 management:
   endpoints:
@@ -41,7 +41,7 @@ management:
         include: "health"
   endpoint:
     health:
-      show-details: "always"
+      show-details: always
 
 
 ---
