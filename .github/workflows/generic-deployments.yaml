@@ -83,6 +83,12 @@ jobs:
                kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
                kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml
 
+      - name: Force Restart Pods
+        run: |
+          kubectl rollout restart deployment bookstore-account-service -n bookstore
+          kubectl rollout restart deployment bookstore-order-service -n bookstore
+          kubectl rollout restart deployment bookstore-api-gateway-service -n bookstore
+
       - name: Wait for Deployment to be Ready
         run: |
           set -e
