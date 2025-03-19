@@ -30,16 +30,12 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
             - name: JAVA_OPTS
-              value: "-Xms256m -Xmx512m -XX:+UseG1GC"
+              value: "-Xms256m -Xmx512m -XX:+UseG1GC -XX:ActiveProcessorCount=2"
           resources:
             requests:
               memory: "256Mi"
-              cpu: "200m"
+              cpu: "300m"
             limits:
               memory: "1024Mi"
-              cpu: "800m"
-          lifecycle:
-            preStop:
-              exec:
-                command: [ "sleep", "45" ]
+              cpu: "1000m"
 
