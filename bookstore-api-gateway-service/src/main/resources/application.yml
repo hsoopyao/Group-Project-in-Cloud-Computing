@@ -12,7 +12,7 @@ spring:
     message-timeout: 10
   sleuth:
     sampler:
-      probability: 1.0
+      probability: 0.1
   servlet:
     multipart:
       max-file-size: 10MB
