@@ -30,26 +30,18 @@ spec:
               value: "docker"
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /actuator/health
               port: 7001
-            initialDelaySeconds: 40
+            initialDelaySeconds: 90
             periodSeconds: 10
-            failureThreshold: 3
-
+            failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /actuator/health
               port: 7001
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 120
+            periodSeconds: 5
             failureThreshold: 3
-#          resources:
-#            requests:
-#              memory: "128Mi"
-#              cpu: "100m"
-#            limits:
-#              memory: "512Mi"
-#              cpu: "500m"
 
 ---
 apiVersion: v1
