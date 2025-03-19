@@ -15,7 +15,7 @@ spec:
         app: bookstore-catalog-service
         version: green
     spec:
-      terminationGracePeriodSeconds: 5
+      terminationGracePeriodSeconds: 30
       containers:
         - name: bookstore-catalog-service
           image: bookstoreapplicationregistry.azurecr.io/bookstore-catalog-service:${IMAGE_TAG}
@@ -42,11 +42,11 @@ spec:
             httpGet:
               path: /actuator/health
               port: 6001
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 6001
-            initialDelaySeconds: 40
+            initialDelaySeconds: 150
             periodSeconds: 5
