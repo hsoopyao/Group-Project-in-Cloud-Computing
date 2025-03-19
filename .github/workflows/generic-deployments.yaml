@@ -50,10 +50,8 @@ jobs:
           echo "Checking and force deleting stuck bookstore-order-service Pods..."
           kubectl get pods -n bookstore | grep bookstore-order-service || true
           
-          # 删除 Failed Pods
           kubectl delete pod -n bookstore --field-selector=status.phase==Failed --grace-period=0 --force || true
           
-          # 删除 Evicted Pods
           EVICTED_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Evicted" | awk '{print $1}')
           if [[ -n "$EVICTED_PODS" ]]; then
             echo "Deleting evicted bookstore-order-service pods: $EVICTED_PODS"
@@ -62,7 +60,6 @@ jobs:
             echo "No evicted bookstore-order-service pods found."
           fi
           
-          # 删除 Terminating Pods
           TERMINATING_PODS=$(kubectl get pods -n bookstore | grep bookstore-order-service | grep "Terminating" | awk '{print $1}')
           if [[ -n "$TERMINATING_PODS" ]]; then
             echo "Force deleting terminating bookstore-order-service pods: $TERMINATING_PODS"
@@ -77,17 +74,13 @@ jobs:
                kubectl apply -f ./kubernetes/monitors/zipkin-manifest.yaml
                kubectl apply -f ./kubernetes/services/bookstore-consul.yaml
                kubectl apply -f ./kubernetes/services/bookstore-account-service-substituted.yaml
+               kubectl delete -f ./kubernetes/services/bookstore-order-service-substituted.yaml --ignore-not-found=true
+               sleep 5
                kubectl apply -f ./kubernetes/services/bookstore-order-service-substituted.yaml
                kubectl apply -f ./kubernetes/services/bookstore-api-gateway-service-substituted.yaml
                kubectl apply -f ./kubernetes/services/frontend-manifest-substituted.yaml
                kubectl apply -f ./kubernetes/services/bookstore-ingress-substituted.yaml
                kubectl apply -f ./kubernetes/monitors/prometheus-manifest-substituted.yaml
-
-      - name: Force Restart Pods
-        run: |
-          kubectl rollout restart deployment bookstore-account-service -n bookstore
-          kubectl rollout restart deployment bookstore-order-service -n bookstore
-          kubectl rollout restart deployment bookstore-api-gateway-service -n bookstore
 
       - name: Wait for Deployment to be Ready
         run: |
