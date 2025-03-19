@@ -42,12 +42,14 @@ spec:
             httpGet:
               path: /actuator/health
               port: 6001
-            initialDelaySeconds: 120
+            initialDelaySeconds: 90
             periodSeconds: 10
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 6001
-            initialDelaySeconds: 150
+            initialDelaySeconds: 120
             periodSeconds: 5
+            failureThreshold: 3
 
