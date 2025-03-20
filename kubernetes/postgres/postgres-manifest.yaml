@@ -33,6 +33,8 @@ spec:
       labels:
         app: bookstore-pgsql-db
     spec:
+      nodeSelector:
+        db-node: "true"
       containers:
         - name: postgres
           image: postgres:14

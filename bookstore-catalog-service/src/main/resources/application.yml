@@ -16,7 +16,7 @@ spring:
     message-timeout: 10
   sleuth:
     sampler:
-      probability: 1.0
+      probability: 0.1
   flyway:
     table: catalog_service_flyway_history
     baseline-on-migrate: true
@@ -32,7 +32,17 @@ spring:
 
 logging:
   level:
-    com.devd.spring.*: DEBUG
+    com.devd.spring.*: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"
+  endpoint:
+    health:
+      show-details: always
+
 
 ---
 

@@ -15,7 +15,7 @@ spec:
         app: bookstore-catalog-service
         version: green
     spec:
-      terminationGracePeriodSeconds: 5
+      terminationGracePeriodSeconds: 30
       containers:
         - name: bookstore-catalog-service
           image: bookstoreapplicationregistry.azurecr.io/bookstore-catalog-service:${IMAGE_TAG}
@@ -30,25 +30,25 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
             - name: JAVA_OPTS
-              value: "-Xms256m -Xmx512m -XX:+UseG1GC"
+              value: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=4 -XX:ConcGCThreads=2"
           resources:
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "200m"
             limits:
               memory: "1024Mi"
               cpu: "800m"
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: bookstore-catalog-service
-#  namespace: bookstore
-#spec:
-#  selector:
-#    app: bookstore-catalog-service-blue-svc
-#    version: blue
-#  ports:
-#    - protocol: TCP
-#      port: 6001
-#      targetPort: 6001
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 6001
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 6001
+            initialDelaySeconds: 90
+            periodSeconds: 5
+            failureThreshold: 3
