@@ -1,0 +1,40 @@
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: postgres-daily-backup
+  namespace: velero
+spec:
+  schedule: "0 1 * * *"  # daily at 1am
+  template:
+    includedNamespaces:
+      - bookstore
+    includedResources:
+      - statefulsets
+      - persistentvolumeclaims
+      - persistentvolumes
+    labelSelector:
+      matchExpressions:
+        - key: app
+          operator: In
+          values:
+            - bookstore-pgsql-db
+    hooks:
+      resources:
+        - name: postgres-database-backup-hook
+          includedNamespaces:
+            - bookstore
+          includedResources:
+            - statefulsets
+          labelSelector:
+            matchLabels:
+              app: bookstore-pgsql-db
+          pre:
+            - exec:
+                container: postgres
+                command:
+                  - /bin/sh
+                  - -c
+                  - "PGPASSWORD=PaSSworD psql -U postgres -d bookstore_db -c 'CHECKPOINT'"
+                onError: Fail
+    ttl: 720h  # save for 30 days
+  

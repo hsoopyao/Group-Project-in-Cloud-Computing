@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-catalog-service
+  namespace: bookstore
+  annotations: {}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-catalog-service
+  template:
+    metadata:
+      labels:
+        app: bookstore-catalog-service
+    spec:
+      nodeSelector:
+        agentpool: agentpool2
+      containers:
+        - name: bookstore-catalog-service
+          image: cloudgp.azurecr.io/bookstore-catalog-service:latest
+          imagePullPolicy: Always
+          env:
+            - name: SERVER_PORT
+              value: "6001"
+            - name: ZIPKIN_HOST
+              value: "bookstore-zipkin:9411"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          ports:
+            - containerPort: 6001
+      imagePullSecrets:
+        - name: acr-secret

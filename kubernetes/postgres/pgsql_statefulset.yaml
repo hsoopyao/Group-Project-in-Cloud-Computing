@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bookstore-pgsql-db
+  namespace: bookstore
+  annotations: {}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-pgsql-db
+  serviceName: bookstore-pgsql-db
+  template:
+    metadata:
+      labels:
+        app: bookstore-pgsql-db
+      annotations:
+        backup.velero.io/backup-volumes: postgresql-data
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:14
+          env:
+            - name: POSTGRES_DB
+              value: bookstore_db
+            - name: POSTGRES_PASSWORD
+              value: PaSSworD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/bookstore
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresql-data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-data
+        namespace: bookstore
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: managed-premium

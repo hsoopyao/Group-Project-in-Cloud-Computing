@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-order-service
+  namespace: bookstore
+  annotations: {}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookstore-order-service
+  template:
+    metadata:
+      labels:
+        app: bookstore-order-service
+    spec:
+      nodeSelector:
+        agentpool: agentpool2
+      containers:
+        - name: bookstore-order-service
+          image: cloudgp.azurecr.io/bookstore-order-service
+          env:
+            - name: SERVER_PORT
+              value: "7001"
+            - name: ZIPKIN_HOST
+              value: "bookstore-zipkin:9411"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+          ports:
+            - containerPort: 7001
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 7001
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 7001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 2
+      imagePullSecrets:
+        - name: acr-secret

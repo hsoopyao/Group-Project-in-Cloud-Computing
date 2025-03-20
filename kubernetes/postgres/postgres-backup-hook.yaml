@@ -1,0 +1,43 @@
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: default
+  namespace: velero
+spec:
+  provider: azure
+  objectStorage:
+    bucket: bookstore-k8s-backups
+  config:
+    region: eu-north-1
+---
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: postgres-backup-with-hooks
+  namespace: velero
+spec:
+  includedNamespaces:
+    - bookstore
+  includedResources:
+    - statefulsets
+    - services
+    - persistentvolumeclaims
+    - persistentvolumes
+  hooks:
+    resources:
+      - name: postgres-database-backup-hook
+        includedNamespaces:
+          - bookstore
+        includedResources:
+          - statefulsets
+        labelSelector:
+          matchLabels:
+            app: bookstore-pgsql-db
+        pre:
+          - exec:
+              container: postgres
+              command:
+                - /bin/sh
+                - -c
+                - "PGPASSWORD=PaSSworD psql -U postgres -d bookstore_db -c 'CHECKPOINT'"
+              onError: Fail
